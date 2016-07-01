@@ -4,6 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import com.atongmu.matchit.android.DrawView;
+import com.atongmu.matchit.android.MapView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,6 +16,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init();
+    }
+
+    private void init(){
+        LinearLayout layout=(LinearLayout) findViewById(R.id.root);
+        //final DrawView view=new DrawView(this);
+        final MapView view=new MapView(this);
+        view.setMinimumHeight(1200);
+        view.setMinimumWidth(500);
+        view.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        //通知view组件重绘
+        view.invalidate();
+        layout.addView(view);
     }
 
     @Override
