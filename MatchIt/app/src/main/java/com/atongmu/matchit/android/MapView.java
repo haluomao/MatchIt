@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.view.View;
 
 import com.atongmu.matchit.R;
+import com.atongmu.matchit.entity.Item;
 import com.atongmu.matchit.entity.Position;
 
 /**
@@ -23,18 +24,20 @@ public class MapView extends View {
     public MapView(Context context) {
         super(context);
     }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // 创建画笔
         Paint p = new Paint();
 
-//        canvas.drawText("画矩形：", 10, 80, p);
+//        canvas.drawText("画矩形：", 10, 80, paint);
 
         p.setColor(Color.GRAY);// 设置灰色
         p.setStyle(Paint.Style.FILL);//设置填满
-//        canvas.drawRect(60, 60, 180, 180, p);// 正方形
-//        canvas.drawRect(60, 90, 260, 200, p);// 长方形
+//        canvas.drawRect(60, 60, 180, 180, paint);// 正方形
+//        canvas.drawRect(60, 90, 260, 200, paint);// 长方形
 
         int itemL = 80;
         int marginL = 2;
@@ -51,7 +54,7 @@ public class MapView extends View {
                 Rect rect = new Rect(res[i][j].getX(), res[i][j].getY(),
                         res[i][j].getX()+itemL-marginL, res[i][j].getY()+itemL-marginL);
                 canvas.drawBitmap(bitmap, null, rect, p);
-                //canvas.drawBitmap(bitmap, res[i][j].getX(), res[i][j].getY(), p);
+                //canvas.drawBitmap(bitmap, res[i][j].getX(), res[i][j].getY(), paint);
             }
         }
     }
@@ -63,6 +66,18 @@ public class MapView extends View {
         for(int i=0; i<mapL; i++){
             for(int j=0; j<mapH; j++){
                 res[i][j] = new Position(res0X+i*itemL+i*marginL, res0Y+j*itemL+i*marginL);
+            }
+        }
+        return res;
+    }
+
+    private Item[][] genItems(Position[][] positions){
+        Item[][] res = new Item[positions.length][positions[0].length];
+        for(int i=0; i<positions.length; i++){
+            for(int j=0; j<positions[0].length; j++){
+                res[i][j] = new Item(positions[i][j]);
+                res[i][j].setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hero_aatrox));
+                res[i][j].setValue(1);
             }
         }
         return res;
@@ -108,7 +123,7 @@ public class MapView extends View {
                 new int[] { Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW,
                         Color.LTGRAY }, null, Shader.TileMode.REPEAT); // 一个材质,打造出一个线性梯度沿著一条线。
         p.setShader(mShader);
-        // p.setColor(Color.BLUE);
+        // paint.setColor(Color.BLUE);
         RectF oval2 = new RectF(60, 100, 200, 240);// 设置个新的长方形，扫描测量
         canvas.drawArc(oval2, 200, 130, true, p);
         // 画弧，第一个参数是RectF：该类是第二个参数是角度的开始，第三个参数是多少度，第四个参数是真的时候画扇形，是假的时候画弧线
@@ -170,6 +185,6 @@ public class MapView extends View {
 
         //画图片，就是贴图
 //        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gas);
-//        canvas.drawBitmap(bitmap, 250,360, p);
+//        canvas.drawBitmap(bitmap, 250,360, paint);
     }
 }
