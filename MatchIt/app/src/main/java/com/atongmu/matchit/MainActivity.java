@@ -1,5 +1,6 @@
 package com.atongmu.matchit;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,6 +8,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.atongmu.matchit.android.DrawSurfaceView;
 import com.atongmu.matchit.android.DrawView;
 import com.atongmu.matchit.android.MapView;
 
@@ -22,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private void init(){
         LinearLayout layout=(LinearLayout) findViewById(R.id.root);
         //final DrawView view=new DrawView(this);
-        final DrawView view=new DrawView(this);
+//        final DrawView view=new DrawView(this);
+        final DrawSurfaceView view = new DrawSurfaceView(this);
         view.setMinimumHeight(1200);
         view.setMinimumWidth(500);
         view.setLayoutParams(new ViewGroup.LayoutParams(
