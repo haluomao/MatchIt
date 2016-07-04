@@ -91,7 +91,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 case MotionEvent.ACTION_DOWN:
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
-                    System.out.println(clickX + "-" + clickY);
+                    System.out.println("ACTION_DOWN:"+clickX + "-" + clickY);
                     Item item = findItem(clickX, clickY);
                     if (item != null && item.getValue()!=0) {
                         if(null == oldItem){
@@ -100,13 +100,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                             //检查是否连通
                             Solution solution = check(items, item, oldItem);
                             //绘制连通
-                            if(solution.getValue() == Solution.WRONG){
-                                oldItem = item;
-                            }else {
-                                paintConnect(canvas, item, oldItem, solution);
-                                drawItems(canvas);
-                                oldItem = null;
-                            }
+//                            if(solution.getValue() == Solution.WRONG){
+//                                oldItem = item;
+//                            }else {
+//                                paintConnect(canvas, item, oldItem, solution);
+//                                drawItems(canvas);
+//                                oldItem = null;
+//                            }
                         }else {
                             oldItem = item;
                         }
@@ -318,17 +318,21 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * @return
      */
     private Item[][] genItems(int x, int y) {
-        Position[][] positions = genRects(this.getWidth(), this.getHeight(),
-                x, y,
+
+        int xL = x+2;
+        int yL = y+2;
+
+        Position[][] positions = genRects(
+                this.getWidth(), this.getHeight(),
+                xL, yL,
                 sizeL, 0);
-        int xL = positions.length+2;
-        int yL = positions[0].length+2;
         Item[][] res = new Item[xL][yL];
         for (int i = 0; i < xL; i++) {
             for (int j = 0; j < yL; j++) {
                 res[i][j] = new Item(positions[i][j]);
                 if(i==0 || j==0 ||i==xL-1||j==yL-1){
                     res[i][j].setValue(0);
+                    res[i][j].setSizeL(sizeL);
                 }else {
                     res[i][j].setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hero_aatrox));
                     res[i][j].setValue(1);
@@ -369,6 +373,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     System.out.println(items[i][j].getPosition().getX() + "," + items[i][j].getPosition().getY());
 
                     Item item = items[i][j];
+                    if(item.getValue()==0) continue;
                     Rect rect = new Rect(item.getPosition().getX(),
                             item.getPosition().getY(),
                             item.getPosition().getX() + item.getSizeL() - marginL,

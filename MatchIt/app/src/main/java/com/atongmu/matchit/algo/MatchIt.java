@@ -53,12 +53,12 @@ public class MatchIt {
     public static Solution match(Point[][] points, Position a, Position b) {
         Solution sol = new Solution();
         sol.setValue(Solution.WRONG);
-        boolean swaped = false;
+        boolean swapped = false;
         if (b.getY() < a.getY() || (b.getY() == a.getY() && b.getX() < a.getX())) {
             Position c = a;
             a = b;
             b = c;
-            swaped = true;
+            swapped = true;
         }
         int aPosX = a.getX();
         int aPosY = a.getY();
@@ -86,7 +86,7 @@ public class MatchIt {
             //直接能连
             if (aAround[3].getX() == b.getX()-1) {
                 sol.setValue(Solution.DOWN);
-                if(swaped) sol.setValue(Solution.UP);
+                if(swapped) sol.setValue(Solution.UP);
                 return sol;
             } else if (aAround[1].getY() != a.getY() && bAround[1].getY() != b.getY()) {
                 for (int y = a.getY() + 1; y < aAround[1].getY() && y < bAround[1].getY(); y++) {
@@ -102,7 +102,7 @@ public class MatchIt {
                         sol.setValue(Solution.RIGHT_DOWN_LEFT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.RIGHT_UP_LEFT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -123,7 +123,7 @@ public class MatchIt {
                         sol.setValue(Solution.LEFT_DOWN_RIGHT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.LEFT_UP_RIGHT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -146,7 +146,7 @@ public class MatchIt {
             //直接能连
             if (aAround[1].getY() == b.getY()-1) {
                 sol.setValue(Solution.RIGHT);
-                if(swaped) sol.setValue(Solution.LEFT);
+                if(swapped) sol.setValue(Solution.LEFT);
                 return sol;
             } else if (aAround[2].getX() != a.getX() && bAround[2].getX() != b.getX()) { //向上
                 for (int x = a.getX() - 1; x > aAround[2].getX() && x > bAround[2].getX(); x--) {
@@ -161,7 +161,7 @@ public class MatchIt {
                         sol.setValue(Solution.UP_RIGHT_DOWN);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.UP_LEFT_DOWN);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
@@ -182,7 +182,7 @@ public class MatchIt {
                         sol.setValue(Solution.DOWN_RIGHT_UP);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.DOWN_LEFT_UP);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
@@ -205,7 +205,7 @@ public class MatchIt {
                 //a 右 下 b
                 sol.setValue(Solution.RIGHT_DOWN);
                 sol.setPos1(new Position(aPosX, bPosY));
-                if(swaped){
+                if(swapped){
                     sol.setValue(Solution.UP_LEFT);
                     sol.setPos1(new Position(aPosX, bPosY));
                 }
@@ -214,7 +214,7 @@ public class MatchIt {
                 //a 下 右 b
                 sol.setValue(Solution.DOWN_RIGHT);
                 sol.setPos1(new Position(bPosX, aPosY));
-                if(swaped){
+                if(swapped){
                     sol.setValue(Solution.LEFT_UP);
                     sol.setPos1(new Position(bPosX, aPosY));
                 }
@@ -236,7 +236,7 @@ public class MatchIt {
                             sol.setValue(Solution.RIGHT_DOWN_RIGHT);
                             sol.setPos1(new Position(aPosX, y));
                             sol.setPos2(new Position(bPosX, y));
-                            if(swaped){
+                            if(swapped){
                                 sol.setValue(Solution.LEFT_UP_LEFT);
                                 sol.setPos2(new Position(aPosX, y));
                                 sol.setPos1(new Position(bPosX, y));
@@ -262,7 +262,7 @@ public class MatchIt {
                         sol.setValue(Solution.LEFT_DOWN_RIGHT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.RIGHT_UP_LEFT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -287,7 +287,7 @@ public class MatchIt {
                         sol.setValue(Solution.RIGHT_DOWN_LEFT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.LEFT_UP_RIGHT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -318,7 +318,7 @@ public class MatchIt {
                             sol.setValue(Solution.DOWN_RIGHT_DOWN);
                             sol.setPos1(new Position(x, aPosY));
                             sol.setPos2(new Position(x, bPosY));
-                            if(swaped){
+                            if(swapped){
                                 sol.setValue(Solution.UP_LEFT_UP);
                                 sol.setPos2(new Position(x, aPosY));
                                 sol.setPos1(new Position(x, bPosY));
@@ -344,7 +344,7 @@ public class MatchIt {
                         sol.setValue(Solution.UP_RIGHT_DOWN);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.UP_LEFT_DOWN);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
@@ -369,7 +369,7 @@ public class MatchIt {
                         sol.setValue(Solution.DOWN_RIGHT_UP);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.DOWN_LEFT_UP);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
@@ -393,7 +393,7 @@ public class MatchIt {
                 //a 右 上 b
                 sol.setValue(Solution.RIGHT_UP);
                 sol.setPos1(new Position(aPosX, bPosY));
-                if(swaped){
+                if(swapped){
                     sol.setValue(Solution.DOWN_LEFT);
                     sol.setPos1(new Position(aPosX, bPosY));
                 }
@@ -402,7 +402,7 @@ public class MatchIt {
                 //a 上 右 b
                 sol.setValue(Solution.UP_RIGHT);
                 sol.setPos1(new Position(bPosX, aPosY));
-                if(swaped){
+                if(swapped){
                     sol.setValue(Solution.LEFT_DOWN);
                     sol.setPos1(new Position(bPosX, aPosY));
                 }
@@ -424,7 +424,7 @@ public class MatchIt {
                             sol.setValue(Solution.RIGHT_UP_RIGHT);
                             sol.setPos1(new Position(aPosX, y));
                             sol.setPos2(new Position(bPosX, y));
-                            if(swaped){
+                            if(swapped){
                                 sol.setValue(Solution.LEFT_DOWN_LEFT);
                                 sol.setPos2(new Position(aPosX, y));
                                 sol.setPos1(new Position(bPosX, y));
@@ -450,7 +450,7 @@ public class MatchIt {
                         sol.setValue(Solution.LEFT_UP_RIGHT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.LEFT_DOWN_RIGHT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -475,7 +475,7 @@ public class MatchIt {
                         sol.setValue(Solution.RIGHT_UP_LEFT);
                         sol.setPos1(new Position(aPosX, y));
                         sol.setPos2(new Position(bPosX, y));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.RIGHT_DOWN_LEFT);
                             sol.setPos2(new Position(aPosX, y));
                             sol.setPos1(new Position(bPosX, y));
@@ -506,7 +506,7 @@ public class MatchIt {
                             sol.setValue(Solution.UP_RIGHT_UP);
                             sol.setPos1(new Position(x, aPosY));
                             sol.setPos2(new Position(x, bPosY));
-                            if(swaped){
+                            if(swapped){
                                 sol.setValue(Solution.DOWN_LEFT_DOWN);
                                 sol.setPos2(new Position(x, aPosY));
                                 sol.setPos1(new Position(x, bPosY));
@@ -532,7 +532,7 @@ public class MatchIt {
                         sol.setValue(Solution.DOWN_RIGHT_UP);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.DOWN_LEFT_UP);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
@@ -557,7 +557,7 @@ public class MatchIt {
                         sol.setValue(Solution.UP_RIGHT_DOWN);
                         sol.setPos1(new Position(x, aPosY));
                         sol.setPos2(new Position(x, bPosY));
-                        if(swaped){
+                        if(swapped){
                             sol.setValue(Solution.UP_LEFT_DOWN);
                             sol.setPos2(new Position(x, aPosY));
                             sol.setPos1(new Position(x, bPosY));
