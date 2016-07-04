@@ -42,7 +42,7 @@ public class MatchIt {
                 break;
             res[2] = points[x][a.getY()].getPosition();
         }
-        for(int x=a.getX()+1; x<points.length-1;x++){
+        for(int x=a.getX()+1; x<=points.length-1;x++){
             if(points[x][a.getY()].getValue()!=0)
                 break;
             res[3] = points[x][a.getY()].getPosition();
@@ -89,7 +89,7 @@ public class MatchIt {
                 if(swapped) sol.setValue(Solution.UP);
                 return sol;
             } else if (aAround[1].getY() != a.getY() && bAround[1].getY() != b.getY()) {
-                for (int y = a.getY() + 1; y < aAround[1].getY() && y < bAround[1].getY(); y++) {
+                for (int y = a.getY() + 1; y <= aAround[1].getY() && y <= bAround[1].getY(); y++) {
                     flag = true;
                     int x = aPosX;
                     for (x = aPosX; x <= bPosX; x++) {
@@ -111,7 +111,7 @@ public class MatchIt {
                     }
                 }
             } else if (aAround[0].getY() != a.getY() && bAround[0].getY() != b.getY()) {
-                for (int y = a.getY() - 1; y > aAround[0].getX() && y > bAround[0].getY(); y--) {
+                for (int y = a.getY() - 1; y >= aAround[0].getY() && y >= bAround[0].getY(); y--) {
                     flag = true;
                     for (int x = aPosX; x <= bPosX; x++) {
                         if (points[x][y].getValue() != 0) {
@@ -149,7 +149,7 @@ public class MatchIt {
                 if(swapped) sol.setValue(Solution.LEFT);
                 return sol;
             } else if (aAround[2].getX() != a.getX() && bAround[2].getX() != b.getX()) { //向上
-                for (int x = a.getX() - 1; x > aAround[2].getX() && x > bAround[2].getX(); x--) {
+                for (int x = a.getX() - 1; x >= aAround[2].getX() && x >= bAround[2].getX(); x--) {
                     flag = true;
                     for (int y = aPosY; y <= bPosY; y++) {
                         if (points[x][y].getValue() != 0) {
@@ -170,7 +170,7 @@ public class MatchIt {
                     }
                 }
             } else if (aAround[3].getX() != a.getX() && bAround[3].getX() != b.getX()) {
-                for (int x = a.getX() + 1; x < aAround[3].getX() && x < bAround[3].getX(); x++) {
+                for (int x = a.getX() + 1; x <= aAround[3].getX() && x <= bAround[3].getX(); x++) {
                     flag = true;
                     for (int y = aPosY; y <= bPosY; y++) {
                         if (points[x][y].getValue() != 0) {
@@ -210,7 +210,7 @@ public class MatchIt {
                     sol.setPos1(new Position(aPosX, bPosY));
                 }
                 return sol;
-            } else if (aAround[3].getY() >= b.getY() && bAround[0].getX() <= a.getX()) {
+            } else if (aAround[3].getX() >= b.getX() && bAround[0].getY() <= a.getY()) {
                 //a 下 右 b
                 sol.setValue(Solution.DOWN_RIGHT);
                 sol.setPos1(new Position(bPosX, aPosY));
@@ -953,7 +953,7 @@ public class MatchIt {
         return false;
     }
 
-    public int[][] genMap(int x, int y, int[] nums) {
+    public static int[][] genMap(int x, int y, int[] nums) {
         if(x*y%2!=0){
             System.out.println("invalid input!");
             return null;
@@ -1018,11 +1018,21 @@ public class MatchIt {
 //            }
 //        }
 
-        Position a = new Position(1,1);
-        Position b = new Position(3,3);
-        points[1][2].setValue(0);
+        Position a = new Position(2,3);
+        Position b = new Position(4,2);
+        points[2][2].setValue(0);
 //        points[1][3].setValue(0);
-        points[2][3].setValue(0);
+        points[3][2].setValue(0);
+
+        System.out.println();
+        for(int i=0; i < xSize+2; i++) {
+            System.out.println();
+            for (int j = 0; j < ySize+2; j++) {
+                System.out.print(points[i][j].getValue() + " ");
+            }
+        }
+        System.out.println();
+
         Solution tmp = matchIt.match(points, a, b);
         System.out.println(a+" "+b+" "+tmp);
     }

@@ -1,6 +1,7 @@
 package com.atongmu.matchit.android;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,6 +40,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private int sizeL = 80;
 
     private Item oldItem;
+
+    static int[] picArr = {1,2,3};
+
+
 
     public DrawSurfaceView(Context context) {
         super(context);
@@ -91,7 +96,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 case MotionEvent.ACTION_DOWN:
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
-                    System.out.println("ACTION_DOWN:"+clickX + "-" + clickY);
                     Item item = findItem(clickX, clickY);
                     if (item != null && item.getValue()!=0) {
                         if(null == oldItem){
@@ -107,6 +111,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                                 paintConnect(canvas, item, oldItem, solution);
                                 drawItems(canvas);
                                 oldItem = null;
+                                if(isEmpty(items)){
+                                    items = genItems(6, 7);
+                                    drawItems(canvas);
+                                }
                             }
                         }else {
                             oldItem = item;
@@ -144,8 +152,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Item item;
         for (int i = 0; i < items.length; i++) {
             for (int j = 0; j < items[0].length; j++) {
-                System.out.println(items[i][j].getPosition().getX() + ","
-                        + items[i][j].getPosition().getY());
+//                System.out.println(items[i][j].getPosition().getX() + ","
+//                        + items[i][j].getPosition().getY());
 
                 item = items[i][j];
                 if(item.getValue() == 0)
@@ -155,6 +163,37 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         item.getPosition().getX() + item.getSizeL() - marginL,
                         item.getPosition().getY() + item.getSizeL() - marginL);
                 canvas.drawBitmap(item.getBitmap(), null, rect, paint);
+            }
+        }
+    }
+
+
+    private void drawMap() {
+        try {
+            canvas = holder.lockCanvas();
+            canvas.drawColor(Color.WHITE);
+
+            paint.setColor(Color.GRAY);// 设置灰色
+            paint.setStyle(Paint.Style.FILL);//设置填满
+
+            for (int i = 0; i < items.length; i++) {
+                for (int j = 0; j < items[0].length; j++) {
+                    System.out.println(items[i][j].getPosition().getX() + "," + items[i][j].getPosition().getY());
+
+                    Item item = items[i][j];
+                    if(item.getValue()==0) continue;
+                    Rect rect = new Rect(item.getPosition().getX(),
+                            item.getPosition().getY(),
+                            item.getPosition().getX() + item.getSizeL() - marginL,
+                            item.getPosition().getY() + item.getSizeL() - marginL);
+                    canvas.drawBitmap(item.getBitmap(), null, rect, paint);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (canvas != null) {
+                holder.unlockCanvasAndPost(canvas);
             }
         }
     }
@@ -178,19 +217,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawPath(path, paint);
     }
 
-    private Item findItem(int x, int y) {
-        int x0 = items[0][0].getPosition().getX();
-        int y0 = items[0][0].getPosition().getY();
-        int length = items[0][0].getSizeL() + marginL;
-        if (x < x0 || y < y0) return null;
-        int xx = (x - x0) / length;
-        int yy = (y - y0) / length;
-        if (xx >= items.length || yy >= items[0].length) {
-            return null;
-        }
-        System.out.println("Find:" + xx + "," + yy);
-        return items[xx][yy];
-    }
+
 
     public void unchose_ex(Canvas canvas, Item item) {
         //应该检查item是否还在？
@@ -212,67 +239,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         path.close();
         canvas.drawPath(path, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-    }
-
-    public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
-        choose(canvas, item2);
-        connect(canvas, item1, item2, solution);
-        flush();
-        clearItem(this.items, item1);
-        clearItem(this.items, item2);
-    }
-
-    public void flush(){
-        holder.unlockCanvasAndPost(canvas);
-        canvas = holder.lockCanvas();
-    }
-    /**
-     * 清除item的值
-     * @param items
-     * @param item
-     */
-    public void clearItem(Item[][] items, Item item){
-        for (int i = 0; i < items.length; i++) {
-            for (int j = 0; j < items[0].length; j++) {
-                if(item.getPosition().equals(items[i][j].getPosition())){
-                    items[i][j].setValue(0);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * 查找 返回数组中的坐标
-     * @param items
-     * @param item
-     */
-    public Position findPosition(Item[][] items, Item item){
-        for (int i = 0; i < items.length; i++) {
-            for (int j = 0; j < items[0].length; j++) {
-                if(item.getPosition().equals(items[i][j].getPosition())){
-                    return new Position(j, i);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 将矩阵中的位置映射到地图中
-     * @param position
-     * @return
-     */
-    public Position transfer(Position position){
-        return items[position.getX()][position.getY()].getCenterPosition();
-    }
-
-    public Solution transfer(Solution solution){
-        if(null!=solution.getPos1())
-            solution.setPos1(new Position(solution.getPos1().getY(), solution.getPos1().getX()));
-        if(null!=solution.getPos1())
-            solution.setPos2(new Position(solution.getPos2().getY(), solution.getPos2().getX()));
-        return solution;
     }
 
     public void connect(Canvas canvas, Item item1, Item item2, Solution solution) {
@@ -317,6 +283,113 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
     }
+    public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
+        choose(canvas, item2);
+        connect(canvas, item1, item2, solution);
+        flush();
+        clearItem(this.items, item1);
+        clearItem(this.items, item2);
+        printItem();
+    }
+
+    public void flush(){
+        holder.unlockCanvasAndPost(canvas);
+        canvas = holder.lockCanvas();
+    }
+
+    private Item findItem(int x, int y) {
+        int x0 = items[0][0].getPosition().getX();
+        int y0 = items[0][0].getPosition().getY();
+        int length = items[0][0].getSizeL() + marginL;
+        if (x < x0 || y < y0) return null;
+        int xx = (x - x0) / length;
+        int yy = (y - y0) / length;
+        if (xx >= items.length || yy >= items[0].length) {
+            return null;
+        }
+        System.out.println("Find:" + xx + "," + yy);
+        return items[xx][yy];
+    }
+
+    /**
+     * 查找 返回数组中的坐标
+     * @param items
+     * @param item
+     */
+    public Position findPosition(Item[][] items, Item item){
+        for (int i = 0; i < items.length; i++) {
+            for (int j = 0; j < items[0].length; j++) {
+                if(item.getPosition().equals(items[i][j].getPosition())){
+                    return new Position(j, i);
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     * 清除item的值
+     * @param items
+     * @param item
+     */
+    public void clearItem(Item[][] items, Item item){
+        for (int i = 0; i < items.length; i++) {
+            for (int j = 0; j < items[0].length; j++) {
+                if(item.getPosition().equals(items[i][j].getPosition())){
+                    items[i][j].setValue(0);
+                    break;
+                }
+            }
+        }
+    }
+    public boolean isEmpty(Item[][]items){
+        for(int i=0; i<items.length; i++){
+            for(int j=0; j<items[0].length; j++){
+                if(items[i][j].getValue()!=0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    private int genId(int resId){
+        int res = 0;
+        switch (resId){
+            case 1:
+                res = R.drawable.hero_aatrox;
+                break;
+            case 2:
+                res = R.drawable.hero_ahri;
+                break;
+            case 3:
+                res = R.drawable.hero_akali;
+                break;
+            default:
+                res = R.drawable.hero_aatrox;
+                break;
+        }
+        return res;
+    }
+    private Bitmap getRes(int id){
+        return BitmapFactory.decodeResource(getResources(), genId(id));
+    }
+    /**
+     * 将矩阵中的位置映射到地图中
+     * @param position
+     * @return
+     */
+    public Position transfer(Position position){
+        return items[position.getX()][position.getY()].getCenterPosition();
+    }
+
+    public Solution transfer(Solution solution){
+        if(null!=solution.getPos1())
+            solution.setPos1(new Position(solution.getPos1().getY(), solution.getPos1().getX()));
+        if(null!=solution.getPos2())
+            solution.setPos2(new Position(solution.getPos2().getY(), solution.getPos2().getX()));
+        return solution;
+    }
+
+
 
     /**
      * 检查是否连通
@@ -337,10 +410,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
         System.out.println("checking");
+        printPoints(points);
         Solution solution =  MatchIt.match(points, position1, position2);
         return transfer(solution);
     }
-
 
     private Position[][] genRects(int viewL, int viewH, int mapL, int mapH, int itemL, int marginL) {
         Position[][] res = new Position[mapL][mapH];
@@ -369,6 +442,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 this.getWidth(), this.getHeight(),
                 xL, yL,
                 sizeL, 0);
+        int[][] values=MatchIt.genMap(x, y, picArr);
         Item[][] res = new Item[xL][yL];
         for (int i = 0; i < xL; i++) {
             for (int j = 0; j < yL; j++) {
@@ -377,8 +451,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     res[i][j].setValue(0);
                     res[i][j].setSizeL(sizeL);
                 }else {
-                    res[i][j].setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hero_aatrox));
-                    res[i][j].setValue(1);
+                    res[i][j].setValue(values[i][j]);
+                    res[i][j].setBitmap(getRes(res[i][j].getValue()));
                     res[i][j].setSizeL(sizeL);
                 }
             }
@@ -403,36 +477,27 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return res;
     }
 
-    private void drawMap() {
-        try {
-            canvas = holder.lockCanvas();
-            canvas.drawColor(Color.WHITE);
-
-            paint.setColor(Color.GRAY);// 设置灰色
-            paint.setStyle(Paint.Style.FILL);//设置填满
-
-            for (int i = 0; i < items.length; i++) {
-                for (int j = 0; j < items[0].length; j++) {
-                    System.out.println(items[i][j].getPosition().getX() + "," + items[i][j].getPosition().getY());
-
-                    Item item = items[i][j];
-                    if(item.getValue()==0) continue;
-                    Rect rect = new Rect(item.getPosition().getX(),
-                            item.getPosition().getY(),
-                            item.getPosition().getX() + item.getSizeL() - marginL,
-                            item.getPosition().getY() + item.getSizeL() - marginL);
-                    canvas.drawBitmap(item.getBitmap(), null, rect, paint);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (canvas != null) {
-                holder.unlockCanvasAndPost(canvas);
+    public void printPoints(Point[][]points){
+        System.out.print("points:");
+        for (int i = 0; i < points.length; i++) {
+            System.out.println();
+            for (int j = 0; j < points[0].length; j++) {
+                System.out.print(points[i][j].getValue() + " ");
             }
         }
+        System.out.println("\n----");
     }
 
+    public void printItem(){
+        System.out.println("Items:");
+        for (int i = 0; i < items.length; i++) {
+            System.out.println();
+            for (int j = 0; j < items[0].length; j++) {
+                System.out.print(items[i][j].getValue()+" ");
+            }
+        }
+        System.out.print("\n----\n");
+    }
     private class RenderThread extends Thread {
         @Override
         public void run() {
@@ -470,7 +535,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void drawCanvas(Canvas canvas) {
-        // 在 canvas 上绘制需要的图形
         drawMap();
     }
 }
