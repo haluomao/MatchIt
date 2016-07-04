@@ -64,7 +64,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         isDraw = true;
-        items = genItems(5, 6);
+        items = genItems(2, 6);
         drawMap();
     }
 
@@ -96,17 +96,18 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     if (item != null && item.getValue()!=0) {
                         if(null == oldItem){
                             oldItem = item;
-                        }else if(item.getValue() == oldItem.getValue()){
+                        }else if(item.getValue() == oldItem.getValue() &&
+                                !item.getPosition().equals(oldItem.getPosition())){
                             //检查是否连通
                             Solution solution = check(items, item, oldItem);
                             //绘制连通
-//                            if(solution.getValue() == Solution.WRONG){
-//                                oldItem = item;
-//                            }else {
-//                                paintConnect(canvas, item, oldItem, solution);
-//                                drawItems(canvas);
-//                                oldItem = null;
-//                            }
+                            if(solution.getValue() == Solution.WRONG){
+                                oldItem = item;
+                            }else {
+                                paintConnect(canvas, item, oldItem, solution);
+                                drawItems(canvas);
+                                oldItem = null;
+                            }
                         }else {
                             oldItem = item;
                         }
@@ -216,11 +217,15 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
         choose(canvas, item2);
         connect(canvas, item1, item2, solution);
-        sleep(500);
+        flush();
         clearItem(this.items, item1);
         clearItem(this.items, item2);
     }
 
+    public void flush(){
+        holder.unlockCanvasAndPost(canvas);
+        canvas = holder.lockCanvas();
+    }
     /**
      * 清除item的值
      * @param items
@@ -237,19 +242,53 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    /**
+     * 查找 返回数组中的坐标
+     * @param items
+     * @param item
+     */
+    public Position findPosition(Item[][] items, Item item){
+        for (int i = 0; i < items.length; i++) {
+            for (int j = 0; j < items[0].length; j++) {
+                if(item.getPosition().equals(items[i][j].getPosition())){
+                    return new Position(j, i);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 将矩阵中的位置映射到地图中
+     * @param position
+     * @return
+     */
+    public Position transfer(Position position){
+        return items[position.getX()][position.getY()].getCenterPosition();
+    }
+
+    public Solution transfer(Solution solution){
+        if(null!=solution.getPos1())
+            solution.setPos1(new Position(solution.getPos1().getY(), solution.getPos1().getX()));
+        if(null!=solution.getPos1())
+            solution.setPos2(new Position(solution.getPos2().getY(), solution.getPos2().getX()));
+        return solution;
+    }
+
     public void connect(Canvas canvas, Item item1, Item item2, Solution solution) {
-        //应该检查item是否还在？
         paint.setColor(Color.GREEN);
         Position position1 = item1.getCenterPosition();
         Position position2 = item2.getCenterPosition();
         if (solution.getPos1() != null) {
-            canvas.drawLine(position1.getX(), position1.getY(), solution.getPos1().getX(),
-                    solution.getPos1().getY(), paint);// 画线
+            Position tmp = transfer(solution.getPos1());
+            canvas.drawLine(position1.getX(), position1.getY(), tmp.getX(),
+                    tmp.getY(), paint);// 画线
             if (solution.getPos2() != null) {
-                canvas.drawLine(solution.getPos1().getX(), solution.getPos1().getY(),
-                        solution.getPos2().getX(), solution.getPos2().getY(), paint);// 画线
+                Position tmp2 = transfer(solution.getPos2());
+                canvas.drawLine(tmp.getX(), tmp.getY(),
+                        tmp2.getX(), tmp2.getY(), paint);// 画线
             } else {
-                canvas.drawLine(solution.getPos1().getX(), solution.getPos1().getY(),
+                canvas.drawLine(tmp.getX(), tmp.getY(),
                         position2.getX(), position2.getY(), paint);// 画线
             }
         } else {
@@ -287,15 +326,19 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * @return
      */
     private Solution check(Item[][] items, Item item1, Item item2){
-        Position position1 = item1.getPosition();
-        Position position2 = item2.getPosition();
-        Point[][] points = new Point[items.length][items[0].length];
+        Position position1 = findPosition(items, item1);
+        System.out.println("position1:"+position1);
+        Position position2 = findPosition(items, item2);
+        System.out.println("position2:"+position2);
+        Point[][] points = new Point[items[0].length][items.length];
         for (int i = 0; i < points.length; i++) {
             for (int j = 0; j < points[0].length; j++) {
-                points[i][j] = items[i][j].getPoint();
+                points[i][j] = new Point(new Position(i,j),items[j][i].getValue() );
             }
         }
-        return MatchIt.match(points, position1, position2);
+        System.out.println("checking");
+        Solution solution =  MatchIt.match(points, position1, position2);
+        return transfer(solution);
     }
 
 

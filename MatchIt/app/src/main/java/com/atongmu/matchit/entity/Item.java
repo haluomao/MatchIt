@@ -74,7 +74,4 @@ public class Item {
         this.sizeL = sizeL;
     }
 
-    public Point getPoint() {
-        return new Point(position, value);
-    }
 }
