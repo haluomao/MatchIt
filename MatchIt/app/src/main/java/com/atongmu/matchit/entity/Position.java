@@ -44,4 +44,12 @@ public class Position {
                 ", y=" + y +
                 ']';
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof Position){
+            return ((Position) obj).getX()==this.getX() && ((Position) obj).getY()==this.getY();
+        }
+        return false;
+    }
 }

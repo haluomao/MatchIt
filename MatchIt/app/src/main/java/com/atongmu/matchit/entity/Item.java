@@ -36,8 +36,8 @@ public class Item {
         Position[] positions = new Position[4];
         positions[0] = position;
         positions[1] = new Position(position.getX(), position.getY()+sizeL);
-        positions[2] = new Position(position.getX()+sizeL, position.getY());
-        positions[3] = new Position(position.getX()+sizeL, position.getY()+sizeL);
+        positions[2] = new Position(position.getX()+sizeL, position.getY()+sizeL);
+        positions[3] = new Position(position.getX()+sizeL, position.getY());
 
         return positions;
     }
@@ -72,5 +72,9 @@ public class Item {
 
     public void setSizeL(int sizeL) {
         this.sizeL = sizeL;
+    }
+
+    public Point getPoint() {
+        return new Point(position, value);
     }
 }

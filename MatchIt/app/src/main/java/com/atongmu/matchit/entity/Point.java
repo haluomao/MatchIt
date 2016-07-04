@@ -13,6 +13,10 @@ public class Point {
     public Point(int x, int y){
         position = new Position(x, y);
     }
+    public Point(Position position, int value){
+        this.position = position;
+        this.value = value;
+    }
     public Position getPosition() {
         return position;
     }

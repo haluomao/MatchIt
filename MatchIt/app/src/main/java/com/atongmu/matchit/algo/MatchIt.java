@@ -24,7 +24,7 @@ public class MatchIt {
      * @param a
      * @return
      */
-    public Position[] getAround(Point[][] points, Position a){
+    public static Position[] getAround(Point[][] points, Position a){
         Position[] res = new Position[4];
         res[0] = res[1] = res[2] = res[3] = a;
         for(int y=a.getY()-1; y>=0;y--){
@@ -50,7 +50,7 @@ public class MatchIt {
         return res;
     }
 
-    public Solution match(Point[][] points, Position a, Position b) {
+    public static Solution match(Point[][] points, Position a, Position b) {
         Solution sol = new Solution();
         sol.setValue(Solution.WRONG);
         boolean swaped = false;

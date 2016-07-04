@@ -16,9 +16,13 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import com.atongmu.matchit.R;
+import com.atongmu.matchit.algo.MatchIt;
 import com.atongmu.matchit.entity.Item;
+import com.atongmu.matchit.entity.Point;
 import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by mfg on 16/07/03.
@@ -83,6 +87,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             canvas = holder.lockCanvas();
             drawItems(canvas);
             switch (eventAction) {
+                //点击事件
                 case MotionEvent.ACTION_DOWN:
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
@@ -92,7 +97,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         if(null == oldItem){
                             oldItem = item;
                         }else if(item.getValue() == oldItem.getValue()){
-                            System.out.println("checking");
+                            //检查是否连通
+                            Solution solution = check(items, item, oldItem);
+                            //绘制连通
+                            if(solution.getValue() == Solution.WRONG){
+                                oldItem = item;
+                            }else {
+                                paintConnect(canvas, item, oldItem, solution);
+                                drawItems(canvas);
+                                oldItem = null;
+                            }
                         }else {
                             oldItem = item;
                         }
@@ -116,6 +130,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    /**
+     * 负责绘制背景中的元素
+     * @param canvas
+     */
     private void drawItems(Canvas canvas) {
         canvas.drawColor(Color.WHITE);
 
@@ -140,17 +158,21 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    /**
+     * 绘制选择框
+     * @param canvas
+     * @param item
+     */
     public void choose(Canvas canvas, Item item) {
-        //应该检查item是否还在？
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3.0f);
         Position[] vertex = item.getVertexPosition();
         Path path = new Path();
-        path.moveTo(vertex[0].getX(), vertex[0].getY());// 此点为多边形的起点
+        path.moveTo(vertex[0].getX(), vertex[0].getY());
         path.lineTo(vertex[1].getX(), vertex[1].getY());
-        path.lineTo(vertex[3].getX(), vertex[3].getY());
         path.lineTo(vertex[2].getX(), vertex[2].getY());
+        path.lineTo(vertex[3].getX(), vertex[3].getY());
         path.close();
         canvas.drawPath(path, paint);
     }
@@ -189,6 +211,30 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         path.close();
         canvas.drawPath(path, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+    }
+
+    public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
+        choose(canvas, item2);
+        connect(canvas, item1, item2, solution);
+        sleep(500);
+        clearItem(this.items, item1);
+        clearItem(this.items, item2);
+    }
+
+    /**
+     * 清除item的值
+     * @param items
+     * @param item
+     */
+    public void clearItem(Item[][] items, Item item){
+        for (int i = 0; i < items.length; i++) {
+            for (int j = 0; j < items[0].length; j++) {
+                if(item.getPosition().equals(items[i][j].getPosition())){
+                    items[i][j].setValue(0);
+                    break;
+                }
+            }
+        }
     }
 
     public void connect(Canvas canvas, Item item1, Item item2, Solution solution) {
@@ -233,6 +279,26 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
     }
 
+    /**
+     * 检查是否连通
+     * @param items
+     * @param item1
+     * @param item2
+     * @return
+     */
+    private Solution check(Item[][] items, Item item1, Item item2){
+        Position position1 = item1.getPosition();
+        Position position2 = item2.getPosition();
+        Point[][] points = new Point[items.length][items[0].length];
+        for (int i = 0; i < points.length; i++) {
+            for (int j = 0; j < points[0].length; j++) {
+                points[i][j] = items[i][j].getPoint();
+            }
+        }
+        return MatchIt.match(points, position1, position2);
+    }
+
+
     private Position[][] genRects(int viewL, int viewH, int mapL, int mapH, int itemL, int marginL) {
         Position[][] res = new Position[mapL][mapH];
         int res0X = (viewL + marginL - marginL * mapL - itemL * mapL) / 2;
@@ -245,7 +311,36 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return res;
     }
 
+    /**
+     * 生成Items数组，带边框
+     * @param x
+     * @param y
+     * @return
+     */
     private Item[][] genItems(int x, int y) {
+        Position[][] positions = genRects(this.getWidth(), this.getHeight(),
+                x, y,
+                sizeL, 0);
+        int xL = positions.length+2;
+        int yL = positions[0].length+2;
+        Item[][] res = new Item[xL][yL];
+        for (int i = 0; i < xL; i++) {
+            for (int j = 0; j < yL; j++) {
+                res[i][j] = new Item(positions[i][j]);
+                if(i==0 || j==0 ||i==xL-1||j==yL-1){
+                    res[i][j].setValue(0);
+                }else {
+                    res[i][j].setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hero_aatrox));
+                    res[i][j].setValue(1);
+                    res[i][j].setSizeL(sizeL);
+                }
+            }
+        }
+        return res;
+    }
+
+    @Deprecated
+    private Item[][] genItems_ex(int x, int y) {
         Position[][] positions = genRects(this.getWidth(), this.getHeight(),
                 x, y,
                 sizeL, 0);
