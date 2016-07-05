@@ -18,7 +18,10 @@ import android.view.View;
 
 import com.atongmu.matchit.R;
 import com.atongmu.matchit.algo.MatchIt;
+import com.atongmu.matchit.dao.Dao;
+import com.atongmu.matchit.entity.Account;
 import com.atongmu.matchit.entity.Item;
+import com.atongmu.matchit.entity.Mission;
 import com.atongmu.matchit.entity.Point;
 import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
@@ -41,12 +44,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private Item oldItem;
 
-    static int[] picArr = {1,2,3};
+    private Dao dao;
+    private Context context = null;
+    private Mission mission=null;
 
+    static int[] picArr = {1,2,3};
 
 
     public DrawSurfaceView(Context context) {
         super(context);
+        this.context = context;
         holder = this.getHolder();
         holder.addCallback(this);
 
@@ -59,6 +66,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         });
         //创建一个绘图线程
         //renderThread = new RenderThread();
+        mission = loadMission();
     }
 
     @Override
@@ -69,6 +77,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         isDraw = true;
+        mission = getNextMission(loadMission());
         items = genItems(2, 6);
         drawMap();
     }
@@ -112,6 +121,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                                 drawItems(canvas);
                                 oldItem = null;
                                 if(isEmpty(items)){
+                                    updateAccount(mission);
                                     items = genItems(6, 7);
                                     drawItems(canvas);
                                 }
@@ -152,9 +162,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Item item;
         for (int i = 0; i < items.length; i++) {
             for (int j = 0; j < items[0].length; j++) {
-//                System.out.println(items[i][j].getPosition().getX() + ","
-//                        + items[i][j].getPosition().getY());
-
                 item = items[i][j];
                 if(item.getValue() == 0)
                     continue;
@@ -263,26 +270,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    public void unconnect(Canvas canvas, Item item1, Item item2, Solution solution) {
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        Position position1 = item1.getCenterPosition();
-        Position position2 = item2.getCenterPosition();
-        if (solution.getPos1() != null) {
-            canvas.drawLine(position1.getX(), position1.getY(), solution.getPos1().getX(),
-                    solution.getPos1().getY(), paint);// 画线
-            if (solution.getPos2() != null) {
-                canvas.drawLine(solution.getPos1().getX(), solution.getPos1().getY(),
-                        solution.getPos2().getX(), solution.getPos2().getY(), paint);// 画线
-            } else {
-                canvas.drawLine(solution.getPos1().getX(), solution.getPos1().getY(),
-                        position2.getX(), position2.getY(), paint);// 画线
-            }
-        } else {
-            canvas.drawLine(position1.getX(), position1.getY(),
-                    position2.getX(), position2.getY(), paint);// 画线
-        }
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-    }
     public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
         choose(canvas, item2);
         connect(canvas, item1, item2, solution);
@@ -389,8 +376,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return solution;
     }
 
-
-
     /**
      * 检查是否连通
      * @param items
@@ -460,23 +445,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return res;
     }
 
-    @Deprecated
-    private Item[][] genItems_ex(int x, int y) {
-        Position[][] positions = genRects(this.getWidth(), this.getHeight(),
-                x, y,
-                sizeL, 0);
-        Item[][] res = new Item[positions.length][positions[0].length];
-        for (int i = 0; i < positions.length; i++) {
-            for (int j = 0; j < positions[0].length; j++) {
-                res[i][j] = new Item(positions[i][j]);
-                res[i][j].setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.hero_aatrox));
-                res[i][j].setValue(1);
-                res[i][j].setSizeL(sizeL);
-            }
-        }
-        return res;
-    }
-
     public void printPoints(Point[][]points){
         System.out.print("points:");
         for (int i = 0; i < points.length; i++) {
@@ -537,4 +505,30 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void drawCanvas(Canvas canvas) {
         drawMap();
     }
+
+
+    private Mission loadMission(){
+        dao = new Dao(context, Account.ACCOUNT);
+        int missionId =0;
+        if(-1 != dao.getInt(Account.MISSION_ID))
+            missionId = dao.getInt(Account.MISSION_ID)+1;
+        System.out.println("已读取文件！missionId："+missionId);
+        return new Mission(missionId, "mission "+missionId);
+    }
+
+    private void updateAccount(Mission mission){
+        dao = new Dao(context, Account.ACCOUNT);
+        dao.put(Account.UID, 1);
+        dao.put(Account.NAME, "huhansan");
+        dao.put(Account.MISSION_ID, mission.getId());
+        System.out.println("已更新文件！");
+    }
+
+    private Mission getNextMission(Mission mission){
+        dao = new Dao(context, Mission.MISSION);
+        //read from mission file
+        return new Mission(mission.getId(), "mission "+mission.getId());
+    }
+
+
 }

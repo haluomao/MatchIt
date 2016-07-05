@@ -219,10 +219,11 @@ public class MatchIt {
                     sol.setPos1(new Position(bPosX, aPosY));
                 }
                 return sol;
-            } else if (aAround[1].getY() <= b.getY() && bAround[0].getY() >= a.getY()) {
-                if (aAround[1].getY() < bAround[0].getY()) {
-                    //中间连不上
-                } else {
+            } else if (aAround[1].getY() >= bAround[0].getY()){
+//            } else if (aAround[1].getY() <= b.getY() && bAround[0].getY() >= a.getY()) {
+//                if (aAround[1].getY() < bAround[0].getY()) {
+//                    //中间连不上
+//                } else {
                     for (int y = bAround[0].getY(); y <= aAround[1].getY(); y++) {
                         flag = true;
                         for (int x = aPosX; x <= bPosX; x++) {
@@ -244,7 +245,7 @@ public class MatchIt {
                             return sol;
                         }
                     }
-                }
+//                }
             } else if (bAround[0].getY() < a.getY()) {
                 int y = bAround[0].getY();
                 if (y < aAround[0].getY())
@@ -301,10 +302,11 @@ public class MatchIt {
             }
 
             //检测横线
-            if (aAround[3].getX() <= b.getX() && bAround[2].getX() >= a.getX()) {
-                if (aAround[3].getX() < bAround[2].getX()) {
-                    //中间连不上
-                } else {
+//            if (aAround[3].getX() <= b.getX() && bAround[2].getX() >= a.getX()) {
+            if (aAround[3].getX() >= bAround[2].getX()) {
+//                if (aAround[3].getX() < bAround[2].getX()) {
+//                    //中间连不上
+//                } else {
                     for (int x = bAround[2].getX(); x <= aAround[3].getX(); x++) {
                         flag = true;
                         for (int y = aPosY; y <= bPosY; y++) {
@@ -325,7 +327,7 @@ public class MatchIt {
                             }
                             return sol;
                         }
-                    }
+//                    }
                 }
             } else if (bAround[2].getX() < a.getX()) {
                 int x = bAround[2].getX();
@@ -381,7 +383,7 @@ public class MatchIt {
                 //横线没有
                 sol.setValue(Solution.WRONG);
             }
-        } else{// if (aPosY > bPosY)
+        } else{// if (aPosX > bPosX)
             /**
              * - - - b
              * l # # l
@@ -407,13 +409,17 @@ public class MatchIt {
                     sol.setPos1(new Position(bPosX, aPosY));
                 }
                 return sol;
-            } else if (aAround[1].getY() <= b.getY() && bAround[0].getY() >= a.getY()) {
-                if (aAround[1].getY() < bAround[0].getY()) {
-                    //中间连不上
-                } else {
+            }
+
+            //检测竖线
+            if (aAround[1].getY() >= bAround[0].getY()) {
+//                if (aAround[1].getY() <= b.getY() && bAround[0].getY() >= a.getY()) {
+//                if (aAround[1].getY() < bAround[0].getY()) {
+//                    //中间连不上
+//                } else {
                     for (int y = bAround[0].getY(); y <= aAround[1].getY(); y++) {
                         flag = true;
-                        for (int x = aPosX; x <= bPosX; x++) {
+                        for (int x = bPosX; x <= aPosX; x++) {
                             if (points[x][y].getValue() != 0) {
                                 flag = false;
                                 break;
@@ -432,7 +438,7 @@ public class MatchIt {
                             return sol;
                         }
                     }
-                }
+//                }
             } else if (bAround[0].getY() < a.getY()) {
                 int y = bAround[0].getY();
                 if (y < aAround[0].getY())
@@ -489,10 +495,11 @@ public class MatchIt {
             }
 
             //检测横线
-            if (aAround[2].getX() >= b.getX() && bAround[3].getX() <= a.getX()) {
-                if (aAround[2].getX() > bAround[3].getX()) {
-                    //中间连不上
-                } else {
+            if (aAround[2].getX() <= bAround[3].getX()) {
+//            if (aAround[2].getX() >= b.getX() && bAround[3].getX() <= a.getX()) {
+//                if (aAround[2].getX() > bAround[3].getX()) {
+//                    //中间连不上
+//                } else {
                     for (int x =aAround[2].getX(); x <= bAround[3].getX(); x++) {
                         flag = true;
                         for (int y = aPosY; y <= bPosY; y++) {
@@ -513,7 +520,7 @@ public class MatchIt {
                             }
                             return sol;
                         }
-                    }
+//                    }
                 }
             } else if (bAround[3].getX() > a.getX()) {
                 int x = bAround[3].getX();
@@ -989,7 +996,7 @@ public class MatchIt {
     public static void main(String []args){
         MatchIt matchIt = new MatchIt();
         int xSize=4;
-        int ySize=3;
+        int ySize=4;
         int []nums = {1,2,3,9,4};
         Point[][] points = new Point[xSize+2][ySize+2];
         int [][] numArr = matchIt.genMap(xSize, ySize, nums);
@@ -1018,11 +1025,12 @@ public class MatchIt {
 //            }
 //        }
 
-        Position a = new Position(2,3);
-        Position b = new Position(4,2);
+        Position a = new Position(1,1);
+        Position b = new Position(3,3);
+        points[2][1].setValue(0);
         points[2][2].setValue(0);
-//        points[1][3].setValue(0);
-        points[3][2].setValue(0);
+        points[2][3].setValue(0);
+        points[3][1].setValue(0);
 
         System.out.println();
         for(int i=0; i < xSize+2; i++) {
