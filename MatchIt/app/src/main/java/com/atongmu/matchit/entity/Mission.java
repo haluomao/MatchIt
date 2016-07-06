@@ -4,8 +4,8 @@ package com.atongmu.matchit.entity;
  * Created by mfg on 16/07/05.
  */
 public class Mission {
-    public static final String MISSION="MISSION";
-    private int id;
+    public static final String MISSION = "MISSION";
+    private Integer id;
     private String name;
 
     //完成得几星
@@ -17,21 +17,24 @@ public class Mission {
 
     //游戏设定
     //宽
-    private int width;
-    private int length;
-    private int size;
+    private Integer width;
+    private Integer height;
+    private Integer size;
     private String itemIds;
     //时间长度
-    private int timeSpan;
+    private Integer timeSpan;
     //奖励类型
-    private int bonusId;
+    private Integer bonusId;
+
+    public Mission() {
+    }
 
     public Mission(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -71,7 +74,7 @@ public class Mission {
         this.timeSpent = timeSpent;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
@@ -79,15 +82,15 @@ public class Mission {
         this.width = width;
     }
 
-    public int getLength() {
-        return length;
+    public Integer getHeight() {
+        return height;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
@@ -103,7 +106,7 @@ public class Mission {
         this.itemIds = itemIds;
     }
 
-    public int getTimeSpan() {
+    public Integer getTimeSpan() {
         return timeSpan;
     }
 
@@ -111,11 +114,32 @@ public class Mission {
         this.timeSpan = timeSpan;
     }
 
-    public int getBonusId() {
+    public Integer getBonusId() {
         return bonusId;
     }
 
     public void setBonusId(int bonusId) {
         this.bonusId = bonusId;
+    }
+
+    public String turnStr(int[] ids) {
+        if (null == ids) return null;
+        StringBuilder res = new StringBuilder("");
+        for (int i = 0; i < ids.length; i++) {
+            if (i != 0)
+                res.append(Const.SEPARATOR);
+            res.append(ids[i]);
+        }
+        return res.toString();
+    }
+
+    public int[] parseStr(String ids) {
+        if (null == ids) return null;
+        String[] idStrArr = ids.split(Const.SEPARATOR);
+        int[] res = new int[idStrArr.length];
+        for (int i = 0; i < idStrArr.length; i++) {
+            res[i] = Integer.parseInt(idStrArr[i]);
+        }
+        return res;
     }
 }
