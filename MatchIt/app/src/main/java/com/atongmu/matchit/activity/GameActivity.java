@@ -28,6 +28,7 @@ public class GameActivity extends AppCompatActivity {
         final DrawSurfaceView view = new DrawSurfaceView(this);
         view.setMinimumHeight(1200);
         view.setMinimumWidth(500);
+        view.setZOrderOnTop(true);
         view.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         //通知view组件重绘

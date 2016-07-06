@@ -219,7 +219,8 @@ public class MatchIt {
                     sol.setPos1(new Position(bPosX, aPosY));
                 }
                 return sol;
-            } else if (aAround[1].getY() >= bAround[0].getY()) {
+            }
+            if (aAround[1].getY() >= bAround[0].getY()) {
                 //检查中间
                 int lower = bAround[2].getX();
                 if (lower < a.getX() + 1)
@@ -248,7 +249,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (bAround[0].getY() < a.getY()) {
+            }
+            if (bAround[0].getY() < a.getY()) {
                 int y = bAround[0].getY();
                 if (y < aAround[0].getY())
                     y = aAround[0].getY();
@@ -273,7 +275,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (aAround[1].getY() > b.getY()) {
+            }
+            if (aAround[1].getY() > b.getY()) {
                 int y = aAround[1].getY();
                 if (y > bAround[1].getY())
                     y = bAround[1].getY();
@@ -334,7 +337,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (bAround[2].getX() < a.getX()) {
+            }
+            if (bAround[2].getX() < a.getX()) {
                 int x = bAround[2].getX();
                 if (x < aAround[2].getX())
                     x = aAround[2].getX();
@@ -359,7 +363,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (aAround[3].getX() > b.getX()) {
+            }
+            if (aAround[3].getX() > b.getX()) {
                 int x = aAround[3].getX();
                 if (x > bAround[3].getX())
                     x = bAround[3].getX();
@@ -446,7 +451,9 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (bAround[0].getY() < a.getY()) {
+            }
+
+            if (bAround[0].getY() < a.getY()) {
                 int y = bAround[0].getY();
                 if (y < aAround[0].getY())
                     y = aAround[0].getY();
@@ -471,7 +478,9 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (aAround[1].getY() > b.getY()) {
+            }
+
+            if (aAround[1].getY() > b.getY()) {
                 int y = aAround[1].getY();
                 if (y > bAround[1].getY())
                     y = bAround[1].getY();
@@ -531,7 +540,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (bAround[3].getX() > a.getX()) {
+            }
+            if (bAround[3].getX() > a.getX()) {
                 int x = bAround[3].getX();
                 if (x > aAround[3].getX())
                     x = aAround[3].getX();
@@ -556,7 +566,8 @@ public class MatchIt {
                         return sol;
                     }
                 }
-            } else if (aAround[2].getX() < b.getX()) {
+            }
+            if (aAround[2].getX() < b.getX()) {
                 int x = aAround[2].getX();
                 if (x < bAround[2].getX())
                     x = bAround[2].getX();

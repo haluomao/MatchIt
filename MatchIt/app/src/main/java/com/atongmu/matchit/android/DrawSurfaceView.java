@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -25,6 +26,7 @@ import com.atongmu.matchit.entity.Mission;
 import com.atongmu.matchit.entity.Point;
 import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
+import com.atongmu.matchit.util.SoundPlayer;
 
 import static java.lang.Thread.sleep;
 
@@ -34,6 +36,8 @@ import static java.lang.Thread.sleep;
 public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private RenderThread renderThread;
+    private TimerThread timerThread;
+    private boolean pause = false;
     private boolean isDraw =false;
 
     private Paint paint = new Paint();
@@ -64,9 +68,18 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 return false;
             }
         });
-        //创建一个绘图线程
-        //renderThread = new RenderThread();
         mission = loadMission();
+
+        SoundPlayer.init(context);
+
+        //创建一个绘图线程
+        renderThread = new RenderThread();
+        timerThread = new TimerThread();
+
+    }
+
+    public DrawSurfaceView(Context context, AttributeSet attrs){
+        super(context,attrs);
     }
 
     @Override
@@ -79,12 +92,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         isDraw = true;
         mission = getNextMission(loadMission());
         items = genItems(2, 6);
-        drawMap();
+        //drawMap();
+        renderThread.start();
+        timerThread.start();
+//        SoundPlayer.startMusic();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         isDraw = false;
+        SoundPlayer.pauseMusic();
     }
 
     private void onClickHandler(View view, MotionEvent event) {
@@ -130,8 +147,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                             oldItem = item;
                         }
                     }
-                    if(null != oldItem)
-                        choose(canvas, oldItem);
+//                    if(null != oldItem)
+//                        choose(canvas, oldItem);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -154,8 +171,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * @param canvas
      */
     private void drawItems(Canvas canvas) {
-        canvas.drawColor(Color.WHITE);
-
         paint.setColor(Color.GRAY);// 设置灰色
         paint.setStyle(Paint.Style.FILL);//设置填满
 
@@ -223,8 +238,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         path.close();
         canvas.drawPath(path, paint);
     }
-
-
 
     public void unchose_ex(Canvas canvas, Item item) {
         //应该检查item是否还在？
@@ -466,46 +479,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         System.out.print("\n----\n");
     }
-    private class RenderThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                // 不停绘制界面
-                while (isDraw) {
-
-                    drawUI();
-                    sleep(1000);
-
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    /**
-     * 界面绘制
-     */
-    public void drawUI() {
-        Canvas canvas = holder.lockCanvas();
-        try {
-            canvas.drawColor(Color.WHITE);
-            paint.setColor(Color.RED);// 设置红色
-
-            canvas.drawText("画圆：", 10, 20, paint);// 画文本
-            canvas.drawCircle(60, 20, 10, paint);// 小圆
-
-            drawCanvas(canvas);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            holder.unlockCanvasAndPost(canvas);
-        }
-    }
-
-    private void drawCanvas(Canvas canvas) {
-        drawMap();
-    }
-
 
     private Mission loadMission(){
         dao = new Dao(context, Account.ACCOUNT);
@@ -530,5 +503,113 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return new Mission(mission.getId(), "mission "+mission.getId());
     }
 
+    /************************************************/
+    private class RenderThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                // 不停绘制界面
+                while (isDraw) {
+                    drawUI();
+                    sleep(10);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    /**
+     * 界面绘制
+     */
+    public void drawUI() {
+        canvas = holder.lockCanvas();
+        try {
+            canvas.drawColor(Color.WHITE);
+//            paint.setColor(Color.GRAY);// 设置灰色
+//            canvas.drawLine(0f,0f,200f,200f, paint);
+            drawBackground(canvas);
+            drawItems(canvas);
+            drawChoose(canvas);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            holder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void drawBackground(Canvas canvas) {
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bgp),
+                0, 0, paint);
+        drawBtns(canvas);
+
+    }
+
+    private long time = 60;
+    private long time1 = System.currentTimeMillis();
+    private long time2 = 0;
+    private String timeText="0.00秒";
+    public void drawTimeBar(Canvas canvas) {
+        //flush();
+        long time3 = System.currentTimeMillis();
+        if(time3-time1<time*1000){
+            timeText = (60*1000-time3+time1)/1000+"秒";
+        }
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setTextSize(50.0f);//设置字体大小
+        //paint.setTypeface(T);//设置字体类型
+        canvas.drawText(timeText, 25, 60, paint);
+    }
+
+    public void drawBtns(Canvas canvas) {
+        int size=25;
+
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth()-size*9, 5,paint);
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth()-size*6, 5,paint);
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth() - size * 3, 5, paint);
+
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth() / 4, this.getHeight() - 20 - size, paint);
+
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth() / 2, this.getHeight() - 20 - size, paint);
+
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
+                this.getWidth() * 3 / 4, this.getHeight() - 20 - size, paint);
+    }
+
+    public void drawChoose(Canvas canvas) {
+        if(null!=oldItem)
+            choose(canvas, oldItem);
+    }
+
+    private class TimerThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                // 不停绘制界面
+                while (isDraw) {
+                    drawUI2();
+                    sleep(10);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void drawUI2() {
+        canvas = holder.lockCanvas(new Rect(0, 0, 130, 130));
+        try {
+            drawTimeBar(canvas);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            holder.unlockCanvasAndPost(canvas);
+        }
+    }
 }

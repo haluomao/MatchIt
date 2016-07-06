@@ -9,13 +9,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView">
+        android:layout_alignParentStart="true">
+
+        <!--<com.atongmu.matchit.android.DrawSurfaceView android:id="@+id/gameView"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"/>-->
+        <!--<Button-->
+            <!--android:id="@+id/btn_return"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:text="下一张"-->
+            <!--android:onClick="nextBt" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/btn_music"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:text="音乐"-->
+            <!--android:onClick="preBt" />-->
+        <!--<Button-->
+            <!--android:id="@+id/btn_sound"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toLeftOf="@id/btn_music"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:text="音效"-->
+            <!--android:onClick="preBt" />-->
+
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView" />
+
 </RelativeLayout>
