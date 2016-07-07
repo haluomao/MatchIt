@@ -117,7 +117,7 @@ public class SoundPlayer {
         SoundPlayer.musicSt = musicSt;
         if(musicSt)
             music.start();
-        else
+        else if(music.isPlaying())
             music.stop();
     }
 
