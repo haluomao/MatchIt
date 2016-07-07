@@ -6,7 +6,9 @@ import com.atongmu.matchit.entity.Solution;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mfg on 16/06/29.
@@ -599,6 +601,96 @@ public class MatchIt {
         return sol;
     }
 
+    public static Solution checkCanSolve(Point[][] points){
+        Solution solution = new Solution();
+        Map<Integer, List<Point>> map = new HashMap<Integer, List<Point>>();
+
+        int value=0;
+        List<Point> list;
+        for(int i=1; i<points.length-1; i++){
+            for(int j=1; j<points[0].length-1; j++){
+                value = points[i][j].getValue();
+                if(value!=0) {
+                    if (map.containsKey(value)){
+                        map.get(value).add(points[i][j]);
+                        if(map.get(value).size()>2) {
+                            solution.setValue(Solution.CAN_SOLVE);
+                            return solution;
+                        }
+                    }else{
+                        list = new ArrayList<Point>();
+                        list.add(points[i][j]);
+                        map.put(value, list);
+                    }
+                }
+            }
+        }
+
+        Position position1, position2;
+        for(int key: map.keySet()){
+            list  = map.get(key);
+
+            for(int i=0; i<list.size(); i++){
+                position1 = list.get(i).getPosition();
+                for(int j=i+1; j<list.size(); j++) {
+                    position2 = list.get(j).getPosition();
+                    solution = match(points, position1, position2);
+                    if(solution.getValue()!=Solution.WRONG){
+                        solution.setPos1(position1);
+                        solution.setPos2(position2);
+                        return solution;
+                    }
+                }
+            }
+        }
+
+        solution.setValue(Solution.WRONG);
+        return solution;
+    }
+
+    public static Solution prompt(Point[][] points){
+        Solution solution = new Solution();
+        Map<Integer, List<Point>> map = new HashMap<Integer, List<Point>>();
+
+        int value=0;
+        List<Point> list;
+        for(int i=1; i<points.length-1; i++){
+            for(int j=1; j<points[0].length-1; j++){
+                value = points[i][j].getValue();
+                if(value!=0) {
+                    if (map.containsKey(value)){
+                        map.get(value).add(points[i][j]);
+                    }else{
+                        list = new ArrayList<Point>();
+                        list.add(points[i][j]);
+                        map.put(value, list);
+                    }
+                }
+            }
+        }
+
+        Position position1, position2;
+        for(int key: map.keySet()){
+            list  = map.get(key);
+
+            for(int i=0; i<list.size(); i++){
+                position1 = list.get(i).getPosition();
+                for(int j=i+1; j<list.size(); j++) {
+                    position2 = list.get(j).getPosition();
+                    solution = match(points, position1, position2);
+                    if(solution.getValue()!=Solution.WRONG){
+                        solution.setPos1(position1);
+                        solution.setPos2(position2);
+                        return solution;
+                    }
+                }
+            }
+        }
+
+        solution.setValue(Solution.WRONG);
+        return solution;
+    }
+
     public static int[][] genMap(int x, int y, int[] nums) {
         if (x * y % 2 != 0) {
             System.out.println("invalid input!");
@@ -634,6 +726,59 @@ public class MatchIt {
 
     public static void main(String[] args) {
         MatchIt matchIt = new MatchIt();
+        int xSize = 10;
+        int ySize = 10;
+        int[] nums = {1, 2, 3, 9, 4};
+        Point[][] points = new Point[xSize + 2][ySize + 2];
+        int[][] numArr = matchIt.genMap(xSize, ySize, nums);
+        for (int i = 0; i < xSize + 2; i++) {
+            for (int j = 0; j < ySize + 2; j++) {
+                int value = numArr[i][j];
+                points[i][j] = new Point(i, j);
+                points[i][j].setValue(value);
+            }
+        }
+
+        System.out.println();
+        for (int i = 0; i < xSize + 2; i++) {
+            System.out.println();
+            for (int j = 0; j < ySize + 2; j++) {
+                System.out.print(points[i][j].getValue() + " ");
+            }
+        }
+        System.out.println();
+
+
+        Solution solution = checkCanSolve(points);
+        while(solution.getValue()!=Solution.WRONG){
+            solution = prompt(points);
+
+            System.out.println(solution.getPos1()+","+solution.getPos2());
+            for (int i = 0; i < xSize + 2; i++) {
+                System.out.println();
+                for (int j = 0; j < ySize + 2; j++) {
+                    System.out.print(points[i][j].getValue() + " ");
+                }
+            }
+            System.out.println();
+            points[solution.getPos1().getX()][solution.getPos1().getY()].setValue(0);
+            points[solution.getPos2().getX()][solution.getPos2().getY()].setValue(0);
+
+            solution = checkCanSolve(points);
+        }
+
+        System.out.println("无解了：");
+        for (int i = 0; i < xSize + 2; i++) {
+            System.out.println();
+            for (int j = 0; j < ySize + 2; j++) {
+                System.out.print(points[i][j].getValue() + " ");
+            }
+        }
+        System.out.println();
+    }
+
+    public static void main2(String[] args) {
+        MatchIt matchIt = new MatchIt();
         int xSize = 4;
         int ySize = 4;
         int[] nums = {1, 2, 3, 9, 4};
@@ -654,6 +799,17 @@ public class MatchIt {
             }
         }
         System.out.println();
+
+        System.out.println();
+        for (int i = 0; i < xSize + 2; i++) {
+            System.out.println();
+            for (int j = 0; j < ySize + 2; j++) {
+                System.out.print(points[i][j].getValue() + " ");
+            }
+        }
+        System.out.println();
+
+
 
 //        for(int i=1; i < xSize+2; i++) {
 //            for (int j = 1; j < ySize; j++) {

@@ -5,6 +5,7 @@ package com.atongmu.matchit.entity;
  */
 public class Solution {
     public static final int WRONG=-1;
+    public static final int CAN_SOLVE=0;
 
     public static final int DOWN=1;
     public static final int UP=2;
