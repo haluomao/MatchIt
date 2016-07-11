@@ -106,8 +106,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 items[items.length-1][0].getPosition().getY());
 
         btnMgr = new ButtonsManager(this);
-        initUI();
-//        renderThread.start();
+//        initUI();
+        renderThread.start();
 //        timerThread.start();
 //        SoundPlayer.startMusic();
 
@@ -149,8 +149,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
                     Item item = findItem(clickX, clickY);
-//                    handleItemClick(canvas, item);
-//                    handleBtnClick(clickX, clickY);
+                    handleItemClick(canvas, item);
+                    handleBtnClick(clickX, clickY);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -581,15 +581,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * 界面绘制
      */
     public void drawUI() {
-        canvas = holder.lockCanvas(itemsRect);
+        canvas = holder.lockCanvas(null);
         try {
-
-//            paint.setColor(Color.GRAY);// 设置灰色
-//            canvas.drawLine(0f,0f,200f,200f, paint);
-//            drawBackground(canvas);
+            canvas.drawColor(Color.WHITE);
+            drawBackground(canvas);
             drawItems(canvas);
             drawChoose(canvas);
-
+            drawTimeBar(canvas);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -610,7 +608,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private long time2 = 0;
     private String timeText="0.00秒";
     public void drawTimeBar(Canvas canvas) {
-        //flush();
         long time3 = System.currentTimeMillis();
         if(time3-time1<time*1000){
             timeText = (60*1000-time3+time1)/1000+"秒";
@@ -635,16 +632,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 // 不停绘制界面
                 while (isDraw) {
                     drawUI2();
-                    sleep(10);
+//                    sleep(1000);
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
     public void drawUI2() {
-        canvas = holder.lockCanvas(new Rect(0, 0, 130, 130));
+        canvas = holder.lockCanvas(new Rect(0, 0, 130, 80));
         try {
             drawTimeBar(canvas);
         } catch (Exception e) {

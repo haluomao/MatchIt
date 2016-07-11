@@ -27,6 +27,6 @@ public class ImageButton {
 
     public ImageButton(){
         status = 0;
-        size= 25;
+        size= 50;
     }
 }

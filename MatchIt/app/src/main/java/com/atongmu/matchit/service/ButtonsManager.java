@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.View;
 
 import com.atongmu.matchit.R;
@@ -96,24 +98,33 @@ public class ButtonsManager {
     public void drawButtons(Canvas canvas, Paint paint){
         for(ImageButton imageButton:buttonList){
             canvas.drawBitmap(imageButton.bitmaps[imageButton.status],
-                    imageButton.position.getX(),
-                    imageButton.position.getY(),
+                    null,
+                    new RectF(imageButton.position.getX(),
+                            imageButton.position.getY(),
+                            imageButton.position.getX()+imageButton.size,
+                            imageButton.position.getY()+imageButton.size),
                     paint);
         }
     }
 
     public void drawButton(Canvas canvas, Paint paint, ImageButton imageButton){
         canvas.drawBitmap(imageButton.bitmaps[imageButton.status],
-                imageButton.position.getX(),
-                imageButton.position.getY(),
+                null,
+                new RectF(imageButton.position.getX(),
+                        imageButton.position.getY(),
+                        imageButton.position.getX()+imageButton.size,
+                        imageButton.position.getY()+imageButton.size),
                 paint);
     }
 
     public void switchButton(Canvas canvas, Paint paint, ImageButton imageButton){
         imageButton.status = (imageButton.status+1)%2;
         canvas.drawBitmap(imageButton.bitmaps[imageButton.status],
-                imageButton.position.getX(),
-                imageButton.position.getY(),
+                null,
+                new RectF(imageButton.position.getX(),
+                        imageButton.position.getY(),
+                        imageButton.position.getX()+imageButton.size,
+                        imageButton.position.getY()+imageButton.size),
                 paint);
     }
 }
