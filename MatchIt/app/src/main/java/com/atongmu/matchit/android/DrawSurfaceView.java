@@ -657,7 +657,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void drawPause(Canvas canvas){
         if(pause){
-            Bitmap pauseBitmap =BitmapFactory.decodeResource(getResources(), R.drawable.pause);
+            Bitmap pauseBitmap =BitmapFactory.decodeResource(getResources(), R.drawable.pause3);
             canvas.drawBitmap(pauseBitmap, null,
                     new Rect(this.getWidth()/2-200,
                             this.getHeight()/2-200,
