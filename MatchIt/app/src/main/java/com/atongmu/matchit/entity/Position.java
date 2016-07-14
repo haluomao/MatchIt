@@ -37,6 +37,9 @@ public class Position {
         this.y = y;
     }
 
+    public boolean equals(Position position){
+        return position!=null && position.x==x && position.y==y;
+    }
     @Override
     public String toString() {
         return "Position [" +

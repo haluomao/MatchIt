@@ -26,6 +26,11 @@ public class Item {
         return new Position(position.getX()+sizeL/2, position.getY()+sizeL/2);
     }
 
+    public boolean equals(Item item){
+        if(item==null) return false;
+        return item.getPosition().equals(this.getPosition());
+    }
+
     /**
      * 0--1
      * l  l

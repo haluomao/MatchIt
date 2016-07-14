@@ -38,7 +38,6 @@ import static java.lang.Thread.sleep;
 public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private RenderThread renderThread;
-    private TimerThread timerThread;
     private boolean pause = false;
     private boolean isDraw =false;
 
@@ -49,6 +48,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private int sizeL = 80;
 
     private Item oldItem;
+
+    //用于提示的两个图片
+    private Item promptItem1;
+    private Item promptItem2;
 
     private Dao dao;
     private Context context = null;
@@ -77,11 +80,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         SoundPlayer.init(context);
 
-
-
         //创建一个绘图线程
         renderThread = new RenderThread();
-        timerThread = new TimerThread();
 
     }
 
@@ -103,26 +103,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         itemsRect = new Rect(0,
                 items[0][0].getPosition().getY(),
                 this.getWidth(),
-                items[items.length-1][0].getPosition().getY());
+                items[0][items[0].length-1].getPosition().getY());
 
         btnMgr = new ButtonsManager(this);
-//        initUI();
         renderThread.start();
-//        timerThread.start();
-//        SoundPlayer.startMusic();
+        SoundPlayer.startMusic();
 
     }
-
-    private void initUI(){
-        canvas = holder.lockCanvas();
-        canvas.drawColor(Color.WHITE);
-        drawBackground(canvas);
-        btnMgr.drawButtons(canvas,paint);
-        if (canvas != null) {
-            holder.unlockCanvasAndPost(canvas);
-        }
-    }
-
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -142,15 +129,19 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         try {
             canvas = holder.lockCanvas(itemsRect);
-            drawItems(canvas);
+            if(!pause) {
+                drawItems(canvas);
+            }
             switch (eventAction) {
                 //点击事件
                 case MotionEvent.ACTION_DOWN:
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
-                    Item item = findItem(clickX, clickY);
-                    handleItemClick(canvas, item);
-                    handleBtnClick(clickX, clickY);
+                    if(!pause) {
+                        Item item = findItem(clickX, clickY);
+                        handleItemClick(canvas, item);
+                    }
+                    handleBtnClick(canvas, clickX, clickY);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -168,7 +159,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    private void handleBtnClick(int x, int y) throws Exception{
+    private void handleBtnClick(Canvas canvas, int x, int y) throws Exception{
         ImageButton imageButton=btnMgr.checkClick(x, y);
         if(imageButton==null){
             return;
@@ -184,10 +175,11 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 SoundPlayer.setSoundSt(imageButton.status == 0 ? true : false);
                 break;
             case ImageButton.BUTTON_PROMPT:
-                //TODO
+                prompt(canvas);
                 break;
             case ImageButton.BUTTON_PAUSE:
-
+                btnMgr.switchButton(canvas, paint, imageButton);
+                pause = (imageButton.status != 0 ? true : false);
                 break;
             case ImageButton.BUTTON_RETRY:
 
@@ -197,6 +189,19 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 break;
         }
         btnMgr.drawButton(canvas, paint, imageButton);
+    }
+
+    //处理提示
+    private void prompt(Canvas canvas) {
+        Solution solution = transfer(MatchIt.prompt(transfer(items)));
+        if(Solution.WRONG != solution.getValue()){
+            promptItem1 = items[solution.getPos1().getX()][solution.getPos1().getY()];
+            promptItem2 = items[solution.getPos2().getX()][solution.getPos2().getY()];
+            System.out.println("promptItem1:"+promptItem1);
+            System.out.println("promptItem2:"+promptItem2);
+        }else {
+            //no solution
+        }
     }
 
     private void handleItemClick(Canvas canvas, Item item) throws Exception{
@@ -211,8 +216,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 if(solution.getValue() == Solution.WRONG){
                     oldItem = item;
                 }else {
-                    paintConnect(canvas, item, oldItem, solution);
+                    drawConnect(canvas, item, oldItem, solution);
+                    if(item.equals(promptItem1) || item.equals(promptItem2) ||
+                            oldItem.equals(promptItem1) || oldItem.equals(promptItem2)){
+                        promptItem1=promptItem2=null;
+                    }
                     drawItems(canvas);
+                    drawPrompt(canvas);
                     oldItem = null;
                     if(isEmpty(items)){
                         updateAccount(mission);
@@ -248,37 +258,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-
-    private void drawMap() {
-        try {
-            canvas = holder.lockCanvas();
-            canvas.drawColor(Color.WHITE);
-
-            paint.setColor(Color.GRAY);// 设置灰色
-            paint.setStyle(Paint.Style.FILL);//设置填满
-
-            for (int i = 0; i < items.length; i++) {
-                for (int j = 0; j < items[0].length; j++) {
-                    System.out.println(items[i][j].getPosition().getX() + "," + items[i][j].getPosition().getY());
-
-                    Item item = items[i][j];
-                    if(item.getValue()==0) continue;
-                    Rect rect = new Rect(item.getPosition().getX(),
-                            item.getPosition().getY(),
-                            item.getPosition().getX() + item.getSizeL() - marginL,
-                            item.getPosition().getY() + item.getSizeL() - marginL);
-                    canvas.drawBitmap(item.getBitmap(), null, rect, paint);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (canvas != null) {
-                holder.unlockCanvasAndPost(canvas);
-            }
-        }
-    }
-
     /**
      * 绘制选择框
      * @param canvas
@@ -296,6 +275,34 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         path.lineTo(vertex[3].getX(), vertex[3].getY());
         path.close();
         canvas.drawPath(path, paint);
+    }
+
+    /**
+     * 绘制提示选择框
+     * @param canvas
+     */
+    public void choosePrompt(Canvas canvas) {
+        if(promptItem1==null || promptItem2==null) return;
+        paint.setColor(Color.BLUE);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(3.0f);
+        Position[] vertex = promptItem1.getVertexPosition();
+        Path path = new Path();
+        path.moveTo(vertex[0].getX(), vertex[0].getY());
+        path.lineTo(vertex[1].getX(), vertex[1].getY());
+        path.lineTo(vertex[2].getX(), vertex[2].getY());
+        path.lineTo(vertex[3].getX(), vertex[3].getY());
+        path.close();
+        canvas.drawPath(path, paint);
+
+        Position[] vertex2 = promptItem2.getVertexPosition();
+        Path path2 = new Path();
+        path2.moveTo(vertex2[0].getX(), vertex2[0].getY());
+        path2.lineTo(vertex2[1].getX(), vertex2[1].getY());
+        path2.lineTo(vertex2[2].getX(), vertex2[2].getY());
+        path2.lineTo(vertex2[3].getX(), vertex2[3].getY());
+        path2.close();
+        canvas.drawPath(path2, paint);
     }
 
     public void unchose_ex(Canvas canvas, Item item) {
@@ -342,13 +349,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
+    public synchronized void drawConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
         choose(canvas, item2);
+        flush();
         connect(canvas, item1, item2, solution);
-        //flush();
         clearItem(this.items, item1);
         clearItem(this.items, item2);
-        printItem();
+        //printItem();
     }
 
     public void flush(){
@@ -446,6 +453,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if(null!=solution.getPos2())
             solution.setPos2(new Position(solution.getPos2().getY(), solution.getPos2().getX()));
         return solution;
+    }
+
+    public Point[][] transfer(Item[][]items){
+        Point[][] points = new Point[items[0].length][items.length];
+        for (int i = 0; i < points.length; i++) {
+            for (int j = 0; j < points[0].length; j++) {
+                points[i][j] = new Point(new Position(i,j),items[j][i].getValue() );
+            }
+        }
+        return points;
     }
 
     /**
@@ -581,12 +598,17 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * 界面绘制
      */
     public void drawUI() {
-        canvas = holder.lockCanvas(null);
+        Canvas canvas = holder.lockCanvas(null);
         try {
             canvas.drawColor(Color.WHITE);
             drawBackground(canvas);
-            drawItems(canvas);
-            drawChoose(canvas);
+            if(!pause) {
+                drawItems(canvas);
+                drawPrompt(canvas);
+                drawChoose(canvas);
+            }else{
+                drawPause(canvas);
+            }
             drawTimeBar(canvas);
         } catch (Exception e) {
             e.printStackTrace();
@@ -603,14 +625,18 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
-    private long time = 60;
+    private long time = 60000;
     private long time1 = System.currentTimeMillis();
-    private long time2 = 0;
     private String timeText="0.00秒";
     public void drawTimeBar(Canvas canvas) {
-        long time3 = System.currentTimeMillis();
-        if(time3-time1<time*1000){
-            timeText = (60*1000-time3+time1)/1000+"秒";
+        if(!pause){
+            long tmp = System.currentTimeMillis();
+            time = time-(tmp-time1);
+            time1 = tmp;
+        }
+
+        if(time>0){
+            timeText = time/1000+"秒";
         }
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);
@@ -625,29 +651,19 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             choose(canvas, oldItem);
     }
 
-    private class TimerThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                // 不停绘制界面
-                while (isDraw) {
-                    drawUI2();
-//                    sleep(1000);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void drawPrompt(Canvas canvas){
+        choosePrompt(canvas);
     }
 
-    public void drawUI2() {
-        canvas = holder.lockCanvas(new Rect(0, 0, 130, 80));
-        try {
-            drawTimeBar(canvas);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            holder.unlockCanvasAndPost(canvas);
+    public void drawPause(Canvas canvas){
+        if(pause){
+            Bitmap pauseBitmap =BitmapFactory.decodeResource(getResources(), R.drawable.pause);
+            canvas.drawBitmap(pauseBitmap, null,
+                    new Rect(this.getWidth()/2-200,
+                            this.getHeight()/2-200,
+                            this.getWidth()/2+200,
+                            this.getHeight()/2+200),
+                    paint);
         }
     }
 }
