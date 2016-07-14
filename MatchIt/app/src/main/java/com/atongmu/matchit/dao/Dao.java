@@ -36,6 +36,6 @@ public class Dao{
     }
 
     public int getInt(String key){
-        return -1;// sharedPreferences.getInt(key, -1);
+        return  sharedPreferences.getInt(key, -1);
     }
 }

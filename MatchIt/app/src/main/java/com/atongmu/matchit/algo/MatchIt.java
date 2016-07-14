@@ -5,10 +5,13 @@ import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.*;
 
 /**
  * Created by mfg on 16/06/29.
@@ -691,7 +694,7 @@ public class MatchIt {
         return solution;
     }
 
-    public static int[][] genMap(int x, int y, int[] nums) {
+    public static int[][] genMap(int x, int y, List<Integer> nums) {
         if (x * y % 2 != 0) {
             System.out.println("invalid input!");
             return null;
@@ -701,7 +704,7 @@ public class MatchIt {
         //直接用Collections里的洗牌函数得了
         List<Integer> cache = new ArrayList<Integer>();
         for (int i = 0; i < x * y / 2; i++) {
-            int tmp = nums[i % nums.length];
+            int tmp = nums.get(i % nums.size());
             cache.add(tmp);
             cache.add(tmp);
         }
@@ -728,9 +731,9 @@ public class MatchIt {
         MatchIt matchIt = new MatchIt();
         int xSize = 10;
         int ySize = 10;
-        int[] nums = {1, 2, 3, 9, 4};
+        //int[] nums = {1, 2, 3, 9, 4};
         Point[][] points = new Point[xSize + 2][ySize + 2];
-        int[][] numArr = matchIt.genMap(xSize, ySize, nums);
+        int[][] numArr = matchIt.genMap(xSize, ySize, null);
         for (int i = 0; i < xSize + 2; i++) {
             for (int j = 0; j < ySize + 2; j++) {
                 int value = numArr[i][j];
@@ -783,7 +786,7 @@ public class MatchIt {
         int ySize = 4;
         int[] nums = {1, 2, 3, 9, 4};
         Point[][] points = new Point[xSize + 2][ySize + 2];
-        int[][] numArr = matchIt.genMap(xSize, ySize, nums);
+        int[][] numArr = matchIt.genMap(xSize, ySize, null);
         for (int i = 0; i < xSize + 2; i++) {
             for (int j = 0; j < ySize + 2; j++) {
                 int value = numArr[i][j];

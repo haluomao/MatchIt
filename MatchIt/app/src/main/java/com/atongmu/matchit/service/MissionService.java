@@ -48,7 +48,7 @@ public class MissionService {
             serializer.endTag(null, "size");
 
             serializer.startTag(null, "timeSpan");
-            serializer.text(mission.getTimeSpan().toString());
+            serializer.text(mission.getTime().toString());
             serializer.endTag(null, "timeSpan");
 
             serializer.startTag(null, "itemIds");
@@ -100,7 +100,7 @@ public class MissionService {
                         }else if("size".equals(name)){
                             mission.setSize(new Integer(parser.nextText()));
                         }else if("timeSpan".equals(name)){
-                            mission.setTimeSpan(new Integer(parser.nextText()));
+                            mission.setTime(new Integer(parser.nextText()));
                         }else if("itemIds".equals(name)){
                             mission.setItemIds(parser.nextText());
                         }else if("bonusId".equals(name)){

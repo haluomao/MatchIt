@@ -37,43 +37,43 @@ public class ButtonsManager {
         musicBtn.id=ImageButton.BUTTON_MUSIC;
         musicBtn.position = new Position(view.getWidth()-musicBtn.size*9, 5);
         musicBtn.bitmaps = new Bitmap[2];
-        musicBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        musicBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        musicBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.music);
+        musicBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.music2);
 
         soundBtn = new ImageButton();
         soundBtn.id=ImageButton.BUTTON_SOUND;
         soundBtn.position = new Position(view.getWidth()-soundBtn.size*6, 5);
         soundBtn.bitmaps = new Bitmap[2];
-        soundBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        soundBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        soundBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.sound);
+        soundBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.sound2);
 
         promptBtn = new ImageButton();
         promptBtn.id=ImageButton.BUTTON_PROMPT;
         promptBtn.position = new Position(view.getWidth()-promptBtn.size*3, 5);
         promptBtn.bitmaps = new Bitmap[2];
-        promptBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        promptBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        promptBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.setting);
+        promptBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.setting);
 
         pauseBtn = new ImageButton();
         pauseBtn.id=ImageButton.BUTTON_PAUSE;
         pauseBtn.position = new Position(view.getWidth() / 4, view.getHeight() - 20 - pauseBtn.size);
         pauseBtn.bitmaps = new Bitmap[2];
-        pauseBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        pauseBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        pauseBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.pause0);
+        pauseBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.go);
 
         retryBtn = new ImageButton();
         retryBtn.id=ImageButton.BUTTON_RETRY;
         retryBtn.position = new Position(view.getWidth() / 2, view.getHeight() - 20 - retryBtn.size);
         retryBtn.bitmaps = new Bitmap[2];
-        retryBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        retryBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        retryBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.replay);
+        retryBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.replay);
 
         backBtn = new ImageButton();
         backBtn.id=ImageButton.BUTTON_BACK;
         backBtn.position = new Position(view.getWidth() *3/ 4, view.getHeight() - 20 - backBtn.size);
         backBtn.bitmaps = new Bitmap[2];
-        backBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
-        backBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.btn);
+        backBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.missions);
+        backBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.missions);
 
         buttonList = new ArrayList<ImageButton>();
         buttonList.add(musicBtn);

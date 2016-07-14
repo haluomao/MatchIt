@@ -22,9 +22,10 @@ public class Mission {
     private Integer size;
     private String itemIds;
     //时间长度
-    private Integer timeSpan;
+    private Integer time;
     //奖励类型
     private Integer bonusId;
+    private Integer next;
 
     public Mission() {
     }
@@ -33,6 +34,15 @@ public class Mission {
         this.id = id;
         this.name = name;
     }
+
+    public Integer getNext() {
+        return next;
+    }
+
+    public void setNext(Integer next) {
+        this.next = next;
+    }
+
 
     public Integer getId() {
         return id;
@@ -106,12 +116,12 @@ public class Mission {
         this.itemIds = itemIds;
     }
 
-    public Integer getTimeSpan() {
-        return timeSpan;
+    public Integer getTime() {
+        return time;
     }
 
-    public void setTimeSpan(int timeSpan) {
-        this.timeSpan = timeSpan;
+    public void setTime(int time) {
+        this.time = time;
     }
 
     public Integer getBonusId() {

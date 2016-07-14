@@ -20,6 +20,7 @@ import android.view.View;
 import com.atongmu.matchit.R;
 import com.atongmu.matchit.algo.MatchIt;
 import com.atongmu.matchit.dao.Dao;
+import com.atongmu.matchit.dao.MissionDao;
 import com.atongmu.matchit.entity.Account;
 import com.atongmu.matchit.entity.ImageButton;
 import com.atongmu.matchit.entity.Item;
@@ -29,6 +30,10 @@ import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
 import com.atongmu.matchit.service.ButtonsManager;
 import com.atongmu.matchit.util.SoundPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
@@ -40,6 +45,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private RenderThread renderThread;
     private boolean pause = false;
     private boolean isDraw =false;
+    private boolean timeOver = false;
 
     private Paint paint = new Paint();
     private Canvas canvas;
@@ -56,11 +62,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Dao dao;
     private Context context = null;
     private Mission mission=null;
+    private Map<Integer, Mission> missions;
 
     private ButtonsManager btnMgr;
     private Rect itemsRect;
     private Rect timerRect;
-    static int[] picArr = {1,2,3};
+    static List<Integer> picList;
+
+    private long time = 60000;
+    private long time1 = System.currentTimeMillis();
+    private String timeText="0.00秒";
 
 
     public DrawSurfaceView(Context context) {
@@ -76,7 +87,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 return false;
             }
         });
-        mission = loadMission();
 
         SoundPlayer.init(context);
 
@@ -97,8 +107,16 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         isDraw = true;
-        mission = getNextMission(loadMission());
-        items = genItems(2, 6);
+        picList = new ArrayList<Integer>();
+        for(int i=0; i<10; i++){
+            picList.add(i+1);
+        }
+        try {
+            missions = MissionDao.getMission(getResources().getXml(R.xml.misssions));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mission = loadMission();
 
         itemsRect = new Rect(0,
                 items[0][0].getPosition().getY(),
@@ -108,7 +126,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         btnMgr = new ButtonsManager(this);
         renderThread.start();
         SoundPlayer.startMusic();
-
+        SoundPlayer.playSound(R.raw.readygo);
     }
 
     @Override
@@ -182,7 +200,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 pause = (imageButton.status != 0 ? true : false);
                 break;
             case ImageButton.BUTTON_RETRY:
-
+                SoundPlayer.playSound(R.raw.readygo);
+                time = 0;
                 break;
             case ImageButton.BUTTON_BACK:
                 //
@@ -197,8 +216,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if(Solution.WRONG != solution.getValue()){
             promptItem1 = items[solution.getPos1().getX()][solution.getPos1().getY()];
             promptItem2 = items[solution.getPos2().getX()][solution.getPos2().getY()];
-            System.out.println("promptItem1:"+promptItem1);
-            System.out.println("promptItem2:"+promptItem2);
         }else {
             //no solution
         }
@@ -206,6 +223,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private void handleItemClick(Canvas canvas, Item item) throws Exception{
         if (item != null && item.getValue()!=0) {
+            SoundPlayer.playSound(R.raw.click);
             if(null == oldItem){
                 oldItem = item;
             }else if(item.getValue() == oldItem.getValue() &&
@@ -226,8 +244,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     oldItem = null;
                     if(isEmpty(items)){
                         updateAccount(mission);
-                        items = genItems(6, 7);
+                        SoundPlayer.playSound(R.raw.applause1);
+                        //等待 进入下一关
+                        sleep(1000);
+                        loadNextMission();
                         drawItems(canvas);
+                        SoundPlayer.playSound(R.raw.readygo);
                     }
                 }
             }else {
@@ -355,7 +377,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         connect(canvas, item1, item2, solution);
         clearItem(this.items, item1);
         clearItem(this.items, item2);
-        //printItem();
+        SoundPlayer.playSound(R.raw.effect);
     }
 
     public void flush(){
@@ -428,6 +450,27 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 break;
             case 3:
                 res = R.drawable.hero_akali;
+                break;
+            case 4:
+                res = R.drawable.hero_amumu;
+                break;
+            case 5:
+                res = R.drawable.hero_anivia;
+                break;
+            case 6:
+                res = R.drawable.hero_annie;
+                break;
+            case 7:
+                res = R.drawable.hero_ashe;
+                break;
+            case 8:
+                res = R.drawable.hero_aurelionsol;
+                break;
+            case 9:
+                res = R.drawable.hero_azir;
+                break;
+            case 10:
+                res = R.drawable.hero_bard;
                 break;
             default:
                 res = R.drawable.hero_aatrox;
@@ -507,7 +550,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * @param y
      * @return
      */
-    private Item[][] genItems(int x, int y) {
+    private Item[][] genItems(int x, int y, int size) {
 
         int xL = x+2;
         int yL = y+2;
@@ -516,7 +559,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 this.getWidth(), this.getHeight(),
                 xL, yL,
                 sizeL, 0);
-        int[][] values=MatchIt.genMap(x, y, picArr);
+        int[][] values=MatchIt.genMap(x, y, picList.subList(0,size));
         Item[][] res = new Item[xL][yL];
         for (int i = 0; i < xL; i++) {
             for (int j = 0; j < yL; j++) {
@@ -562,7 +605,15 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if(-1 != dao.getInt(Account.MISSION_ID))
             missionId = dao.getInt(Account.MISSION_ID)+1;
         System.out.println("已读取文件！missionId："+missionId);
-        return new Mission(missionId, "mission "+missionId);
+        mission = missions.get(missionId);
+        if(mission!=null && mission.getNext()!=-1)
+            mission = missions.get(mission.getNext());
+        else{
+            mission = missions.get(1);
+        }
+        items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
+        resetTime(mission.getTime());
+        return mission;
     }
 
     private void updateAccount(Mission mission){
@@ -573,12 +624,31 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         System.out.println("已更新文件！");
     }
 
-    private Mission getNextMission(Mission mission){
-        dao = new Dao(context, Mission.MISSION);
-        //read from mission file
-        return new Mission(mission.getId(), "mission "+mission.getId());
+    private Mission resetMission(){
+        items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
+        resetTime(mission.getTime());
+        return mission;
     }
 
+    private Mission loadNextMission(){
+        // 保持用户通关信息
+        // dao.put();
+        //time
+        if(mission!=null && mission.getNext()!=-1) {
+            mission = missions.get(mission.getNext());
+        }else{
+            //已通关全部关卡
+            mission = missions.get(1);
+        }
+        items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
+        resetTime(mission.getTime());
+        return mission;
+    }
+
+    public void  resetTime(int time){
+        this.time = time*1000;
+        this.time1 = System.currentTimeMillis();
+    }
     /************************************************/
     private class RenderThread extends Thread {
         @Override
@@ -625,9 +695,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
-    private long time = 60000;
-    private long time1 = System.currentTimeMillis();
-    private String timeText="0.00秒";
+
     public void drawTimeBar(Canvas canvas) {
         if(!pause){
             long tmp = System.currentTimeMillis();
@@ -637,6 +705,9 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         if(time>0){
             timeText = time/1000+"秒";
+        }else if(!timeOver){
+            timeOver = true;
+            SoundPlayer.playSound(R.raw.timeover1);
         }
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);

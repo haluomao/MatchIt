@@ -46,8 +46,11 @@ public class SoundPlayer {
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC,100);
 
         soundMap = new HashMap<Integer,Integer>();
-//        soundMap.put(R.raw.itemboom, soundPool.load(context, R.raw.itemboom, 1));
-//        soundMap.put(R.raw.sel, soundPool.load(context, R.raw.sel, 1));
+        soundMap.put(R.raw.applause1, soundPool.load(context, R.raw.applause1, 1));
+        soundMap.put(R.raw.click, soundPool.load(context, R.raw.click, 1));
+        soundMap.put(R.raw.effect, soundPool.load(context, R.raw.effect, 1));
+        soundMap.put(R.raw.readygo, soundPool.load(context, R.raw.readygo, 1));
+        soundMap.put(R.raw.timeover1, soundPool.load(context, R.raw.timeover1, 1));
     }
 
     //初始化音乐播放器

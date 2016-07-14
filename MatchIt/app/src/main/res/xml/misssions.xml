@@ -1,4 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-</PreferenceScreen>
+<missions>
+    <mission id="1">
+        <name>Mission 1</name>
+        <time>20</time>
+        <width>2</width>
+        <height>6</height>
+        <size>3</size>
+        <bonus_id>0</bonus_id>
+        <next>2</next>
+    </mission>
+    <mission id="2">
+        <name>Mission 2</name>
+        <time>20</time>
+        <width>4</width>
+        <height>4</height>
+        <size>4</size>
+        <bonus_id>0</bonus_id>
+        <next>3</next>
+    </mission>
+    <mission id="3">
+        <name>Mission 3</name>
+        <time>20</time>
+        <width>6</width>
+        <height>6</height>
+        <size>6</size>
+        <bonus_id>0</bonus_id>
+        <next>4</next>
+    </mission>
+    <mission id="4">
+        <name>Mission 4</name>
+        <time>30</time>
+        <width>6</width>
+        <height>6</height>
+        <size>7</size>
+        <bonus_id>0</bonus_id>
+        <next>5</next>
+    </mission>
+    <mission id="5">
+        <name>Mission 5</name>
+        <time>20</time>
+        <width>2</width>
+        <height>6</height>
+        <size>9</size>
+        <bonus_id>0</bonus_id>
+        <next>6</next>
+    </mission>
+    <mission id="6">
+        <name>Mission 6</name>
+        <time>20</time>
+        <width>6</width>
+        <height>6</height>
+        <size>10</size>
+        <bonus_id>0</bonus_id>
+        <next>-1</next>
+    </mission>
+</missions>
