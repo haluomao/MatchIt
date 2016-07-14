@@ -21,11 +21,13 @@ import com.atongmu.matchit.R;
 import com.atongmu.matchit.algo.MatchIt;
 import com.atongmu.matchit.dao.Dao;
 import com.atongmu.matchit.entity.Account;
+import com.atongmu.matchit.entity.ImageButton;
 import com.atongmu.matchit.entity.Item;
 import com.atongmu.matchit.entity.Mission;
 import com.atongmu.matchit.entity.Point;
 import com.atongmu.matchit.entity.Position;
 import com.atongmu.matchit.entity.Solution;
+import com.atongmu.matchit.service.ButtonsManager;
 import com.atongmu.matchit.util.SoundPlayer;
 
 import static java.lang.Thread.sleep;
@@ -52,6 +54,9 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Context context = null;
     private Mission mission=null;
 
+    private ButtonsManager btnMgr;
+    private Rect itemsRect;
+    private Rect timerRect;
     static int[] picArr = {1,2,3};
 
 
@@ -71,6 +76,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         mission = loadMission();
 
         SoundPlayer.init(context);
+
+
 
         //创建一个绘图线程
         renderThread = new RenderThread();
@@ -92,11 +99,30 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         isDraw = true;
         mission = getNextMission(loadMission());
         items = genItems(2, 6);
-        //drawMap();
-        renderThread.start();
-        timerThread.start();
+
+        itemsRect = new Rect(0,
+                items[0][0].getPosition().getY(),
+                this.getWidth(),
+                items[items.length-1][0].getPosition().getY());
+
+        btnMgr = new ButtonsManager(this);
+        initUI();
+//        renderThread.start();
+//        timerThread.start();
 //        SoundPlayer.startMusic();
+
     }
+
+    private void initUI(){
+        canvas = holder.lockCanvas();
+        canvas.drawColor(Color.WHITE);
+        drawBackground(canvas);
+        btnMgr.drawButtons(canvas,paint);
+        if (canvas != null) {
+            holder.unlockCanvasAndPost(canvas);
+        }
+    }
+
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -115,7 +141,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         System.out.println(clickX + "-" + clickY);
 
         try {
-            canvas = holder.lockCanvas();
+            canvas = holder.lockCanvas(itemsRect);
             drawItems(canvas);
             switch (eventAction) {
                 //点击事件
@@ -123,32 +149,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     clickX = (int) event.getX();
                     clickY = (int) event.getY();
                     Item item = findItem(clickX, clickY);
-                    if (item != null && item.getValue()!=0) {
-                        if(null == oldItem){
-                            oldItem = item;
-                        }else if(item.getValue() == oldItem.getValue() &&
-                                !item.getPosition().equals(oldItem.getPosition())){
-                            //检查是否连通
-                            Solution solution = check(items, item, oldItem);
-                            //绘制连通
-                            if(solution.getValue() == Solution.WRONG){
-                                oldItem = item;
-                            }else {
-                                paintConnect(canvas, item, oldItem, solution);
-                                drawItems(canvas);
-                                oldItem = null;
-                                if(isEmpty(items)){
-                                    updateAccount(mission);
-                                    items = genItems(6, 7);
-                                    drawItems(canvas);
-                                }
-                            }
-                        }else {
-                            oldItem = item;
-                        }
-                    }
-//                    if(null != oldItem)
-//                        choose(canvas, oldItem);
+//                    handleItemClick(canvas, item);
+//                    handleBtnClick(clickX, clickY);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -166,6 +168,63 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    private void handleBtnClick(int x, int y) throws Exception{
+        ImageButton imageButton=btnMgr.checkClick(x, y);
+        if(imageButton==null){
+            return;
+        }
+        System.out.println("imageButton.id:"+imageButton.id);
+        switch (imageButton.id){
+            case ImageButton.BUTTON_MUSIC:
+                btnMgr.switchButton(canvas, paint, imageButton);
+                SoundPlayer.setMusicSt(imageButton.status==0?true:false);
+                break;
+            case ImageButton.BUTTON_SOUND:
+                btnMgr.switchButton(canvas, paint, imageButton);
+                SoundPlayer.setSoundSt(imageButton.status == 0 ? true : false);
+                break;
+            case ImageButton.BUTTON_PROMPT:
+                //TODO
+                break;
+            case ImageButton.BUTTON_PAUSE:
+
+                break;
+            case ImageButton.BUTTON_RETRY:
+
+                break;
+            case ImageButton.BUTTON_BACK:
+                //
+                break;
+        }
+        btnMgr.drawButton(canvas, paint, imageButton);
+    }
+
+    private void handleItemClick(Canvas canvas, Item item) throws Exception{
+        if (item != null && item.getValue()!=0) {
+            if(null == oldItem){
+                oldItem = item;
+            }else if(item.getValue() == oldItem.getValue() &&
+                    !item.getPosition().equals(oldItem.getPosition())){
+                //检查是否连通
+                Solution solution = check(items, item, oldItem);
+                //绘制连通
+                if(solution.getValue() == Solution.WRONG){
+                    oldItem = item;
+                }else {
+                    paintConnect(canvas, item, oldItem, solution);
+                    drawItems(canvas);
+                    oldItem = null;
+                    if(isEmpty(items)){
+                        updateAccount(mission);
+                        items = genItems(6, 7);
+                        drawItems(canvas);
+                    }
+                }
+            }else {
+                oldItem = item;
+            }
+        }
+    }
     /**
      * 负责绘制背景中的元素
      * @param canvas
@@ -286,7 +345,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void paintConnect(Canvas canvas, Item item1, Item item2, Solution solution) throws Exception{
         choose(canvas, item2);
         connect(canvas, item1, item2, solution);
-        flush();
+        //flush();
         clearItem(this.items, item1);
         clearItem(this.items, item2);
         printItem();
@@ -522,12 +581,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
      * 界面绘制
      */
     public void drawUI() {
-        canvas = holder.lockCanvas();
+        canvas = holder.lockCanvas(itemsRect);
         try {
-            canvas.drawColor(Color.WHITE);
+
 //            paint.setColor(Color.GRAY);// 设置灰色
 //            canvas.drawLine(0f,0f,200f,200f, paint);
-            drawBackground(canvas);
+//            drawBackground(canvas);
             drawItems(canvas);
             drawChoose(canvas);
 
@@ -541,7 +600,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void drawBackground(Canvas canvas) {
         canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bgp),
                 0, 0, paint);
-        drawBtns(canvas);
+
+        btnMgr.drawButtons(canvas, paint);
 
     }
 
@@ -562,25 +622,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawText(timeText, 25, 60, paint);
     }
 
-    public void drawBtns(Canvas canvas) {
-        int size=25;
-
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth()-size*9, 5,paint);
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth()-size*6, 5,paint);
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth() - size * 3, 5, paint);
-
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth() / 4, this.getHeight() - 20 - size, paint);
-
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth() / 2, this.getHeight() - 20 - size, paint);
-
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn),
-                this.getWidth() * 3 / 4, this.getHeight() - 20 - size, paint);
-    }
 
     public void drawChoose(Canvas canvas) {
         if(null!=oldItem)
