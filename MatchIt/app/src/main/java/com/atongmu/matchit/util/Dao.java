@@ -1,4 +1,4 @@
-package com.atongmu.matchit.dao;
+package com.atongmu.matchit.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

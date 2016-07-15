@@ -19,7 +19,7 @@ import android.view.View;
 
 import com.atongmu.matchit.R;
 import com.atongmu.matchit.algo.MatchIt;
-import com.atongmu.matchit.dao.Dao;
+import com.atongmu.matchit.util.Dao;
 import com.atongmu.matchit.dao.MissionDao;
 import com.atongmu.matchit.entity.Account;
 import com.atongmu.matchit.entity.ImageButton;
@@ -182,7 +182,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if(imageButton==null){
             return;
         }
-        System.out.println("imageButton.id:"+imageButton.id);
         switch (imageButton.id){
             case ImageButton.BUTTON_MUSIC:
                 btnMgr.switchButton(canvas, paint, imageButton);
@@ -200,8 +199,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 pause = (imageButton.status != 0 ? true : false);
                 break;
             case ImageButton.BUTTON_RETRY:
+                resetMission();
                 SoundPlayer.playSound(R.raw.readygo);
-                time = 0;
                 break;
             case ImageButton.BUTTON_BACK:
                 //
@@ -209,6 +208,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         btnMgr.drawButton(canvas, paint, imageButton);
     }
+
 
     //处理提示
     private void prompt(Canvas canvas) {
@@ -218,6 +218,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             promptItem2 = items[solution.getPos2().getX()][solution.getPos2().getY()];
         }else {
             //no solution
+            resetMission();
         }
     }
 
@@ -613,6 +614,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
         resetTime(mission.getTime());
+        promptItem1 = promptItem2 = null;
         return mission;
     }
 
@@ -627,6 +629,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Mission resetMission(){
         items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
         resetTime(mission.getTime());
+        promptItem1 = promptItem2 = null;
         return mission;
     }
 
@@ -649,6 +652,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         this.time = time*1000;
         this.time1 = System.currentTimeMillis();
     }
+
     /************************************************/
     private class RenderThread extends Thread {
         @Override
@@ -701,6 +705,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             long tmp = System.currentTimeMillis();
             time = time-(tmp-time1);
             time1 = tmp;
+        }else{
+            time1 = System.currentTimeMillis();
         }
 
         if(time>0){

@@ -1,5 +1,7 @@
 package com.atongmu.matchit.entity;
 
+import com.atongmu.matchit.common.Consts;
+
 /**
  * Created by mfg on 16/07/05.
  */
@@ -7,13 +9,6 @@ public class Mission {
     public static final String MISSION = "MISSION";
     private Integer id;
     private String name;
-
-    //完成得几星
-    private int stars;
-    //是否完成
-    private int completed;
-    //耗时
-    private int timeSpent;
 
     //游戏设定
     //宽
@@ -58,30 +53,6 @@ public class Mission {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getStars() {
-        return stars;
-    }
-
-    public void setStars(int stars) {
-        this.stars = stars;
-    }
-
-    public int getCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(int completed) {
-        this.completed = completed;
-    }
-
-    public int getTimeSpent() {
-        return timeSpent;
-    }
-
-    public void setTimeSpent(int timeSpent) {
-        this.timeSpent = timeSpent;
     }
 
     public Integer getWidth() {
@@ -137,7 +108,7 @@ public class Mission {
         StringBuilder res = new StringBuilder("");
         for (int i = 0; i < ids.length; i++) {
             if (i != 0)
-                res.append(Const.SEPARATOR);
+                res.append(Consts.SEPARATOR);
             res.append(ids[i]);
         }
         return res.toString();
@@ -145,7 +116,7 @@ public class Mission {
 
     public int[] parseStr(String ids) {
         if (null == ids) return null;
-        String[] idStrArr = ids.split(Const.SEPARATOR);
+        String[] idStrArr = ids.split(Consts.SEPARATOR);
         int[] res = new int[idStrArr.length];
         for (int i = 0; i < idStrArr.length; i++) {
             res[i] = Integer.parseInt(idStrArr[i]);
