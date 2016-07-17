@@ -3,6 +3,7 @@ package com.atongmu.matchit.service;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -109,8 +110,10 @@ public class ButtonsManager {
                 colorMatrix.setSaturation(0);
                 ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(
                         colorMatrix);
+                ColorFilter tmp  = paint.getColorFilter();
                 paint.setColorFilter(colorMatrixFilter);
                 canvas2.drawBitmap(imageButton.bitmaps[1], 0, 0, paint);
+                paint.setColorFilter(tmp);
                 continue;
             }
             canvas.drawBitmap(imageButton.bitmaps[imageButton.status],
@@ -142,5 +145,12 @@ public class ButtonsManager {
                         imageButton.position.getX()+imageButton.size,
                         imageButton.position.getY()+imageButton.size),
                 paint);
+    }
+
+    public ImageButton getById(int id){
+        for(ImageButton imageButton:buttonList)
+            if(imageButton.id ==id)
+                return imageButton;
+        return null;
     }
 }
