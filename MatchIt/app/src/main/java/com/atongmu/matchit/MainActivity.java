@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //read user profile here
         setContentView(R.layout.activity_main);
         init();
     }
