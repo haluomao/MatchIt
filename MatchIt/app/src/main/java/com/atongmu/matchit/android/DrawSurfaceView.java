@@ -71,6 +71,11 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private long time = 60000;
     private long time1 = System.currentTimeMillis();
+
+    public static final long PROMPT_TIME=20000;
+    private long promptTime=20000;
+    private boolean isPrompted=false;
+
     private String timeText="0.00秒";
 
 
@@ -193,6 +198,10 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 SoundPlayer.setSoundSt(imageButton.status == 0 ? true : false);
                 break;
             case ImageButton.BUTTON_PROMPT:
+                btnMgr.switchButton(canvas, paint, imageButton);
+                if(imageButton.status==1 && promptTime == PROMPT_TIME){
+                    isPrompted = true;
+                }
                 prompt(canvas);
                 break;
             case ImageButton.BUTTON_PAUSE:
@@ -700,6 +709,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if(!pause){
             long tmp = System.currentTimeMillis();
             time = time-(tmp-time1);
+            if(isPrompted)
+                promptTime = promptTime -(tmp-time1);
             time1 = tmp;
         }
 

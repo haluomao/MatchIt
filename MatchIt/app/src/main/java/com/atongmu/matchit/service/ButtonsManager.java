@@ -3,6 +3,8 @@ package com.atongmu.matchit.service;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -51,8 +53,8 @@ public class ButtonsManager {
         promptBtn.id=ImageButton.BUTTON_PROMPT;
         promptBtn.position = new Position(view.getWidth()-promptBtn.size*3, 5);
         promptBtn.bitmaps = new Bitmap[2];
-        promptBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.setting);
-        promptBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.setting);
+        promptBtn.bitmaps[0] = BitmapFactory.decodeResource(view.getResources(), R.drawable.prompt);
+        promptBtn.bitmaps[1] = BitmapFactory.decodeResource(view.getResources(), R.drawable.prompt);
 
         pauseBtn = new ImageButton();
         pauseBtn.id=ImageButton.BUTTON_PAUSE;
@@ -97,6 +99,20 @@ public class ButtonsManager {
 
     public void drawButtons(Canvas canvas, Paint paint){
         for(ImageButton imageButton:buttonList){
+            if(ImageButton.BUTTON_PROMPT == imageButton.id && imageButton.status==1){
+                int width = imageButton.bitmaps[1].getWidth();
+                int height = imageButton.bitmaps[1].getHeight();
+                Bitmap faceIconGreyBitmap = Bitmap
+                        .createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Canvas canvas2 = new Canvas(faceIconGreyBitmap);
+                ColorMatrix colorMatrix = new ColorMatrix();
+                colorMatrix.setSaturation(0);
+                ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(
+                        colorMatrix);
+                paint.setColorFilter(colorMatrixFilter);
+                canvas2.drawBitmap(imageButton.bitmaps[1], 0, 0, paint);
+                continue;
+            }
             canvas.drawBitmap(imageButton.bitmaps[imageButton.status],
                     null,
                     new RectF(imageButton.position.getX(),
