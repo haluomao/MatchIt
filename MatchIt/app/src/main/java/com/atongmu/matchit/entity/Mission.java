@@ -103,24 +103,5 @@ public class Mission {
         this.bonusId = bonusId;
     }
 
-    public String turnStr(int[] ids) {
-        if (null == ids) return null;
-        StringBuilder res = new StringBuilder("");
-        for (int i = 0; i < ids.length; i++) {
-            if (i != 0)
-                res.append(Consts.SEPARATOR);
-            res.append(ids[i]);
-        }
-        return res.toString();
-    }
 
-    public int[] parseStr(String ids) {
-        if (null == ids) return null;
-        String[] idStrArr = ids.split(Consts.SEPARATOR);
-        int[] res = new int[idStrArr.length];
-        for (int i = 0; i < idStrArr.length; i++) {
-            res[i] = Integer.parseInt(idStrArr[i]);
-        }
-        return res;
-    }
 }

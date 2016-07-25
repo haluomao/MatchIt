@@ -25,7 +25,9 @@ public class GameActivity extends AppCompatActivity {
     private void init() {
         LinearLayout layout=(LinearLayout) findViewById(R.id.layout_game);
 
+        String user = getIntent().getStringExtra("user");
         final DrawSurfaceView view = new DrawSurfaceView(this);
+        view.setUser(user);
         view.setMinimumHeight(1200);
         view.setMinimumWidth(500);
         view.setZOrderOnTop(true);

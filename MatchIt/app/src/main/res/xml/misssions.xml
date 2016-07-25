@@ -20,7 +20,7 @@
     </mission>
     <mission id="3">
         <name>Mission 3</name>
-        <time>20</time>
+        <time>25</time>
         <width>6</width>
         <height>6</height>
         <size>6</size>
@@ -29,7 +29,7 @@
     </mission>
     <mission id="4">
         <name>Mission 4</name>
-        <time>30</time>
+        <time>20</time>
         <width>6</width>
         <height>6</height>
         <size>7</size>
@@ -39,8 +39,8 @@
     <mission id="5">
         <name>Mission 5</name>
         <time>20</time>
-        <width>2</width>
-        <height>6</height>
+        <width>6</width>
+        <height>7</height>
         <size>9</size>
         <bonus_id>0</bonus_id>
         <next>6</next>
@@ -48,8 +48,62 @@
     <mission id="6">
         <name>Mission 6</name>
         <time>20</time>
-        <width>6</width>
+        <width>7</width>
         <height>6</height>
+        <size>10</size>
+        <bonus_id>0</bonus_id>
+        <next>7</next>
+    </mission>
+    <mission id="7">
+        <name>Mission 7</name>
+        <time>18</time>
+        <width>7</width>
+        <height>6</height>
+        <size>9</size>
+        <bonus_id>0</bonus_id>
+        <next>8</next>
+    </mission>
+    <mission id="8">
+        <name>Mission 8</name>
+        <time>18</time>
+        <width>7</width>
+        <height>6</height>
+        <size>10</size>
+        <bonus_id>0</bonus_id>
+        <next>9</next>
+    </mission>
+    <mission id="9">
+        <name>Mission 9</name>
+        <time>20</time>
+        <width>7</width>
+        <height>8</height>
+        <size>8</size>
+        <bonus_id>0</bonus_id>
+        <next>10</next>
+    </mission>
+    <mission id="10">
+        <name>Mission 10</name>
+        <time>20</time>
+        <width>7</width>
+        <height>8</height>
+        <size>9</size>
+        <bonus_id>0</bonus_id>
+        <next>11</next>
+    </mission>
+    <mission id="11">
+        <name>Mission 11</name>
+        <time>20</time>
+        <width>7</width>
+        <height>8</height>
+        <size>10</size>
+        <bonus_id>0</bonus_id>
+        <next>12</next>
+    </mission>
+    <mission id="12">
+        <name>Mission 12</name>
+        <time>18</time>
+        <width>7</width>
+        <height>8</height>
         <size>10</size>
         <bonus_id>0</bonus_id>
         <next>-1</next>

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.atongmu.matchit.common.Consts;
 import com.atongmu.matchit.entity.Profile;
+import com.atongmu.matchit.entity.UserMission;
 import com.atongmu.matchit.util.Dao;
 
 /**
@@ -27,5 +28,15 @@ public class ProfileDao {
         String users = dao.getString(Consts.PROFILE_KEY_USERS);
         //TODO
         return null;
+    }
+    public UserMission getProfile(String user){
+        int next = dao.getInt(user + "-next");
+        if(-1 == next)
+            return new UserMission(user, -1);
+        return new UserMission(user, next);
+    }
+
+    public void setProfile(UserMission user){
+        dao.put(user.getUsername()+"-next", user.next);
     }
 }

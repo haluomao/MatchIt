@@ -3,4 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="new_profile">New Profile</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
 </resources>

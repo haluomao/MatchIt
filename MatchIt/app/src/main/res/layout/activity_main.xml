@@ -22,10 +22,29 @@
             android:layout_gravity="center_horizontal" />
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="新游戏"
+            android:text="新建档案"
             android:id="@+id/btn_new"
             android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="退出"
+            android:id="@+id/btn_exit"
+            android:layout_gravity="center_horizontal" />
+
+
     </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="160dp"
+        android:id="@+id/profile_list"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
 </RelativeLayout>
