@@ -32,7 +32,7 @@ public class ProfileDao {
     public UserMission getProfile(String user){
         int next = dao.getInt(user + "-next");
         if(-1 == next)
-            return new UserMission(user, -1);
+            return new UserMission(user, 1);
         return new UserMission(user, next);
     }
 

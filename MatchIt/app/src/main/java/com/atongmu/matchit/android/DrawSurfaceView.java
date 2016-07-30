@@ -1,5 +1,6 @@
 package com.atongmu.matchit.android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,7 +28,6 @@ import com.atongmu.matchit.entity.Item;
 import com.atongmu.matchit.entity.Mission;
 import com.atongmu.matchit.entity.Point;
 import com.atongmu.matchit.entity.Position;
-import com.atongmu.matchit.entity.Profile;
 import com.atongmu.matchit.entity.Solution;
 import com.atongmu.matchit.entity.UserMission;
 import com.atongmu.matchit.service.ButtonsManager;
@@ -218,10 +219,13 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 break;
             case ImageButton.BUTTON_RETRY:
                 resetMission();
+                setPause(false);
                 SoundPlayer.playSound(R.raw.readygo);
                 break;
             case ImageButton.BUTTON_BACK:
-                //
+                updateAccount(mission);
+                Activity activity = (Activity)(this.context);
+                activity.finish();
                 break;
         }
         btnMgr.drawButton(canvas, paint, imageButton);
@@ -618,15 +622,12 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private Mission loadMission(){
-
         int missionId =0;
         UserMission userMission = profileDao.getProfile(user);
-        missionId = userMission.next+1;
+        missionId = userMission.next;
         System.out.println("已读取文件！missionId：" + missionId);
         mission = missions.get(missionId);
-        if(mission!=null && mission.getNext()!=-1)
-            mission = missions.get(mission.getNext());
-        else{
+        if(mission==null || mission.getNext()==-1){
             mission = missions.get(1);
         }
         items = genItems(mission.getWidth(), mission.getHeight(), mission.getSize());
@@ -651,9 +652,6 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private Mission loadNextMission(){
-        // 保持用户通关信息
-        // dao.put();
-        //time
         if(mission!=null && mission.getNext()!=-1) {
             mission = missions.get(mission.getNext());
         }else{
@@ -711,8 +709,8 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void drawBackground(Canvas canvas) {
-        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bgp),
-                0, 0, paint);
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gamebg1),
+                null, new RectF(0,0,this.getWidth(),this.getHeight()+100), paint);
 
         btnMgr.drawButtons(canvas, paint);
     }
@@ -724,9 +722,14 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         isPrompted = false;
     }
 
-    public void setPause(){
-        btnMgr.switchButton(canvas,paint,btnMgr.getById(ImageButton.BUTTON_PAUSE));
-        pause=true;
+    public void setPause(boolean bool){
+        if(bool && !pause) {
+            btnMgr.switchButton(canvas, paint, btnMgr.getById(ImageButton.BUTTON_PAUSE));
+            pause = true;
+        }else if(!bool && pause){
+            btnMgr.switchButton(canvas, paint, btnMgr.getById(ImageButton.BUTTON_PAUSE));
+            pause = false;
+        }
     }
 
     public void drawTimeBar(Canvas canvas) {
@@ -749,7 +752,7 @@ public class DrawSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             timeOver = true;
             SoundPlayer.playSound(R.raw.timeover1);
             resetMission();
-            setPause();
+            setPause(true);
         }
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);

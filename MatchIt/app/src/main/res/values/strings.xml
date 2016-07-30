@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="new_profile">New Profile</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok">Ok</string>
+    <string name="new_profile">新建档案</string>
+    <string name="cancel">取消</string>
+    <string name="ok">保存</string>
 </resources>
