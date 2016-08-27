@@ -19,6 +19,7 @@ import com.atongmu.matchit.entity.Solution;
 
 /**
  * Created by mfg on 16/07/01.
+ * 没用的类
  */
 public class DrawView2 extends View {
     Paint paint = new Paint();

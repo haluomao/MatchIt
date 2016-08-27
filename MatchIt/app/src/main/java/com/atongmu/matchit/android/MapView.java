@@ -32,13 +32,8 @@ public class MapView extends View {
         // 创建画笔
         Paint p = new Paint();
 
-//        canvas.drawText("画矩形：", 10, 80, paint);
-
         p.setColor(Color.GRAY);// 设置灰色
         p.setStyle(Paint.Style.FILL);//设置填满
-//        canvas.drawRect(60, 60, 180, 180, paint);// 正方形
-//        canvas.drawRect(60, 90, 260, 200, paint);// 长方形
-
         int itemL = 80;
         int marginL = 2;
         Position [][] res = genRects(this.getMeasuredWidth(),this.getMeasuredHeight(),

@@ -1,11 +1,8 @@
 package com.atongmu.matchit.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.atongmu.matchit.R;
@@ -23,7 +20,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void init() {
-        LinearLayout layout=(LinearLayout) findViewById(R.id.layout_game);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.layout_game);
 
         String user = getIntent().getStringExtra("user");
         final DrawSurfaceView view = new DrawSurfaceView(this);

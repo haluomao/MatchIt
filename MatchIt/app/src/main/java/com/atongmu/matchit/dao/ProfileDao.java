@@ -29,14 +29,23 @@ public class ProfileDao {
         //TODO
         return null;
     }
-    public UserMission getProfile(String user){
+    public UserMission getNextProfile(String user){
         int next = dao.getInt(user + "-next");
         if(-1 == next)
             return new UserMission(user, 1);
         return new UserMission(user, next);
     }
 
+    public UserMission getProfile(String user){
+        int current = dao.getInt(user + "-current");
+        int next = dao.getInt(user + "-next");
+        if(0 == next)
+            return new UserMission(user, 2, 1);
+        return new UserMission(user, next, current);
+    }
+
     public void setProfile(UserMission user){
+        dao.put(user.getUsername()+"-current", user.getMissionId());
         dao.put(user.getUsername()+"-next", user.next);
     }
 }

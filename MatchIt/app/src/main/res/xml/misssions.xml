@@ -20,7 +20,7 @@
     </mission>
     <mission id="3">
         <name>Mission 3</name>
-        <time>25</time>
+        <time>30</time>
         <width>6</width>
         <height>6</height>
         <size>6</size>
@@ -29,7 +29,7 @@
     </mission>
     <mission id="4">
         <name>Mission 4</name>
-        <time>20</time>
+        <time>25</time>
         <width>6</width>
         <height>6</height>
         <size>7</size>
@@ -38,7 +38,7 @@
     </mission>
     <mission id="5">
         <name>Mission 5</name>
-        <time>20</time>
+        <time>25</time>
         <width>6</width>
         <height>7</height>
         <size>9</size>
@@ -47,7 +47,7 @@
     </mission>
     <mission id="6">
         <name>Mission 6</name>
-        <time>20</time>
+        <time>25</time>
         <width>7</width>
         <height>6</height>
         <size>10</size>
@@ -56,7 +56,7 @@
     </mission>
     <mission id="7">
         <name>Mission 7</name>
-        <time>18</time>
+        <time>25</time>
         <width>7</width>
         <height>6</height>
         <size>9</size>
@@ -65,7 +65,7 @@
     </mission>
     <mission id="8">
         <name>Mission 8</name>
-        <time>18</time>
+        <time>20</time>
         <width>7</width>
         <height>6</height>
         <size>10</size>

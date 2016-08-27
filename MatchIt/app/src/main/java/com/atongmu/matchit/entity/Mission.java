@@ -102,6 +102,4 @@ public class Mission {
     public void setBonusId(int bonusId) {
         this.bonusId = bonusId;
     }
-
-
 }

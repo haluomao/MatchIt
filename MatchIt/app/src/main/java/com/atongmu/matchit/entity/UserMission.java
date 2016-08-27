@@ -29,6 +29,11 @@ public class UserMission {
         this.username = username;
         this.next = next;
     }
+    public UserMission(String username, int next, int current) {
+        this.username = username;
+        this.next = next;
+        this.missionId = current;
+    }
 
     public UserMission(String username, int next, int missionId, int stars, int timeSpent) {
         this.username = username;
